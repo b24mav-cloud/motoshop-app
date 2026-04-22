@@ -1,0 +1,661 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { MessageCircle, X, Send, Wrench, BookOpen, HelpCircle, ShoppingBag, User, Calendar, Cpu, Disc3, ClipboardList, ChevronDown, Gauge, CircleDot, Cable, Battery, Bike, Shield } from 'lucide-react';
+import jbmsLogo from './jbms.png';
+import carGif from './car1.gif';
+import carTwoGif from './car2.gif';
+import motGif from './mot.gif';
+import motTwoGif from './mot2.gif';
+
+/**
+ * --- MOTOSHOP AI MECHANIC CONFIGURATION ---
+ * The environment provides the API key at runtime.
+ */
+const apiKey = ""; 
+
+const SYSTEM_PROMPT = `You are the MOTOSHOP AI Mechanic, a specialist in motorcycles and cars in the Philippines. 
+Your tone is helpful, expert, and friendly (using common Pinoy rider terms like "Paps" or "Ride Safe").
+
+Your duties:
+1. DIAGNOSE: Ask follow-up questions about sounds, smells, or vibrations to help identify issues.
+2. RECOMMEND PARTS: Suggest specific high-quality parts available at MOTOSHOP (e.g., Akrapovic, Brembo, Michelin, specialized oils).
+3. SAFETY FIRST: If an issue sounds dangerous (like brake failure), tell them to stop riding immediately.
+4. LOCAL CONTEXT: Mention local brands or maintenance tips suitable for Philippine weather (heavy rain, extreme heat).
+
+Keep responses concise and use bullet points for readability.`;
+
+const gradientSurfaceClass = "overflow-hidden border border-white/10 bg-gradient-to-r from-[#ff3636] to-[#f97215] bg-clip-padding";
+const gradientTextClass = "bg-gradient-to-r from-[#ff3636] to-[#f97215] bg-clip-text text-transparent";
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('home');
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-[#222222] text-white font-sans selection:bg-orange-500 pb-24 overflow-x-hidden">
+      {/* Dynamic Styles for Animations */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes pulse-orange {
+          0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7); }
+          70% { box-shadow: 0 0 0 20px rgba(249, 115, 22, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+        }
+        .animate-pulse-orange {
+          animation: pulse-orange 2s infinite;
+        }
+        .chat-slide-up {
+          animation: chatPop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes chatPop {
+          from { transform: translateY(50px) scale(0.9); opacity: 0; }
+          to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
+      `}} />
+
+      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+      
+      <main className="max-w-6xl mx-auto px-4 pt-4">
+        {activeTab === 'home' && <HomeView setActiveTab={setActiveTab} />}
+        {activeTab === 'products' && <ProductsView />}
+        {activeTab === 'services' && <ServicesView />}
+        {activeTab === 'about' && <PlaceholderView title="About" icon={<BookOpen size={48} className={`${gradientTextClass} mb-4`} />} />}
+        {activeTab === 'help' && <PlaceholderView title="Help" icon={<HelpCircle size={48} className={`${gradientTextClass} mb-4`} />} />}
+        {activeTab === 'join' && <JoinView />}
+      </main>
+
+      {/* Floating Chatbot Component */}
+      <Chatbot isChatOpen={isChatOpen} setIsChatOpen={setIsChatOpen} />
+    </div>
+  );
+}
+
+// --- Navigation ---
+function Navbar({ activeTab, setActiveTab }) {
+  const navItems = [
+    { id: 'products', label: 'PRODUCTS' },
+    { id: 'services', label: 'SERVICES' },
+    { id: 'about', label: 'ABOUT' },
+    { id: 'help', label: 'HELP' },
+  ];
+
+  return (
+    <nav className="bg-[#333333] sticky top-0 z-50 shadow-2xl border-b border-white/5">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setActiveTab('home')}>
+          <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-orange-500/70 bg-[#242424] p-2 shadow-[0_8px_22px_rgba(249,115,22,0.22)] ring-1 ring-white/10 transition-transform group-hover:scale-105">
+            <img
+              src={jbmsLogo}
+              alt="JBMS MOTOSHOP logo"
+              className="h-full w-full rounded-full object-cover"
+            />
+          </div>
+          <span className="font-black text-2xl tracking-tighter italic text-white">JBMS MOTOSHOP</span>
+        </div>
+        <div className="hidden md:flex gap-2">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`px-4 py-2 rounded-full text-[9px] font-black tracking-[0.16em] transition-all lg:px-5
+                ${activeTab === item.id 
+                  ? `${gradientSurfaceClass} text-white shadow-lg`
+                  : 'bg-[#444444] text-gray-400 hover:bg-[#555555] border border-transparent'}`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={() => setActiveTab('join')}
+          className={`${gradientSurfaceClass} px-4 py-2 rounded-2xl text-[9px] font-black text-white uppercase tracking-[0.12em] shadow-[0_14px_30px_rgba(249,115,22,0.24)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(249,115,22,0.28)] lg:px-5`}
+        >
+          Join Us Now
+        </button>
+      </div>
+    </nav>
+  );
+}
+
+// --- Views ---
+function HomeView({ setActiveTab }) {
+  return (
+    <div className="flex flex-col items-center gap-16 mt-12 animate-in fade-in duration-700">
+      <div className="text-center">
+        <div className="flex flex-col items-center justify-center gap-5 mb-4 sm:flex-row sm:gap-6">
+          <div className="flex h-28 w-28 items-center justify-center rounded-full border-[3px] border-orange-500/80 bg-[#2a2a2a] p-3 shadow-[0_18px_45px_rgba(249,115,22,0.2)] ring-1 ring-white/10 sm:h-32 sm:w-32">
+            <img
+              src={jbmsLogo}
+              alt="JBMS MOTOSHOP logo"
+              className="h-full w-full rounded-full object-cover"
+            />
+          </div>
+          <h1 className="text-7xl font-black tracking-tighter italic text-white">JBMS MOTOSHOP</h1>
+        </div>
+        <h2 className="text-5xl font-black tracking-tight mb-4 uppercase text-white">Gear Up. Ride Hard.</h2>
+        <p className="text-sm font-bold text-gray-400 tracking-[0.3em] uppercase">Premium Parts • Expert Service • PH Choice</p>
+      </div>
+
+      <div className="w-full max-w-5xl rounded-[60px] p-3 bg-[#333333] border border-white/10 shadow-2xl relative overflow-hidden">
+        <div className="relative h-[450px] rounded-[50px] overflow-hidden">
+           <img 
+            src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1200" 
+            alt="Biker" 
+            className="w-full h-full object-cover brightness-90" 
+           />
+           <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+             <button
+               onClick={() => setActiveTab('join')}
+               className={`${gradientSurfaceClass} px-16 py-5 rounded-full font-black text-2xl shadow-2xl transition-all hover:scale-110 hover:shadow-[0_24px_50px_rgba(249,115,22,0.32)] italic tracking-tighter text-white`}
+             >
+               GET STARTED
+             </button>
+           </div>
+        </div>
+      </div>
+
+      <div className="w-full max-w-5xl bg-[#333333] rounded-[60px] p-16 text-center space-y-20 border border-white/10 shadow-2xl mb-24 relative overflow-hidden">
+        <div className="relative z-10">
+          <h3 className="text-6xl font-black italic mb-2 text-white">Service Fast.</h3>
+          <p className={`${gradientTextClass} font-black text-xl uppercase tracking-widest`}>Premium Parts & Maintenance</p>
+        </div>
+        <div className="relative z-10">
+          <h3 className="text-6xl font-black italic mb-2 text-white">Powered By Performance</h3>
+          <p className={`${gradientTextClass} font-black text-xl uppercase tracking-widest`}>Top-Tier Engine Components</p>
+        </div>
+        <div className="relative z-10">
+          <h3 className="text-6xl font-black italic mb-2 text-white">Built To Last</h3>
+          <p className={`${gradientTextClass} font-black text-xl uppercase tracking-widest`}>Global Quality Brands</p>
+        </div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[20rem] font-black opacity-[0.02] pointer-events-none italic select-none text-white">MOTO</div>
+      </div>
+    </div>
+  );
+}
+
+function JoinView() {
+  const bannerItems = [carGif, motGif, carTwoGif, motTwoGif];
+  const [activeBannerIndex, setActiveBannerIndex] = useState(0);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setActiveBannerIndex((currentIndex) => (currentIndex + 1) % bannerItems.length);
+    }, 5000);
+
+    return () => window.clearInterval(intervalId);
+  }, [bannerItems.length]);
+
+  return (
+    <div className="mt-12 mb-24 flex justify-center animate-in fade-in duration-700">
+      <section className="w-full max-w-3xl rounded-[52px] border border-white/10 bg-[#333333] p-6 shadow-2xl sm:p-10">
+        <div className="rounded-[42px] border border-white/10 bg-[#2a2a2a] p-8 shadow-[0_20px_45px_rgba(0,0,0,0.28)]">
+          <p className={`${gradientTextClass} text-xs font-black uppercase tracking-[0.45em]`}>Join JBMS</p>
+          <h2 className="mt-4 text-5xl font-black italic tracking-tight text-white">Stay in the loop.</h2>
+          <p className="mt-4 text-sm font-bold uppercase tracking-[0.2em] text-gray-400">
+            Leave your email and we can wire up the real submit flow later.
+          </p>
+
+          <div className="mt-8 flex justify-center">
+            <div className="w-full max-w-[480px] rounded-[34px] border border-orange-400/30 bg-[#1f1f1f] p-3 shadow-[0_20px_45px_rgba(249,115,22,0.12)]">
+              <div className="overflow-hidden rounded-[26px] border border-white/10">
+                <div
+                  className="flex h-[200px] transition-transform duration-700 ease-out"
+                  style={{ transform: `translateX(-${activeBannerIndex * 100}%)` }}
+                >
+                  {bannerItems.map((bannerSrc, index) => (
+                    <img
+                      key={bannerSrc}
+                      src={bannerSrc}
+                      alt={`JBMS MOTOSHOP banner ${index + 1}`}
+                      className="h-[200px] w-full min-w-full object-cover"
+                    />
+                  ))}
+                </div>
+              </div>
+              <div className="mt-4 flex justify-center gap-2">
+                {bannerItems.map((_, index) => (
+                  <span
+                    key={index}
+                    className={`h-2.5 w-2.5 rounded-full transition-all ${
+                      index === activeBannerIndex ? 'bg-gradient-to-r from-[#ff3636] to-[#f97215]' : 'bg-white/20'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <form className="mt-10 space-y-4">
+            <input
+              type="email"
+              placeholder="Enter your email address"
+              className="w-full rounded-3xl border border-white/10 bg-[#1f1f1f] px-5 py-4 text-sm font-bold text-white outline-none transition-all placeholder:text-gray-500 focus:border-orange-500"
+            />
+            <button
+              type="button"
+              className={`${gradientSurfaceClass} w-full rounded-3xl px-5 py-4 text-sm font-black uppercase tracking-[0.3em] text-white shadow-[0_18px_35px_rgba(249,115,22,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_40px_rgba(249,115,22,0.34)]`}
+            >
+              Submit
+            </button>
+          </form>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function ProductsView() {
+  const productSections = [
+    {
+      id: 'engine-performance',
+      number: '01',
+      title: 'Basic Engine & Performance Parts',
+      description: 'Core performance and engine essentials for smoother starts, better airflow, and stronger running condition.',
+      icon: Gauge,
+      items: ['Engine', 'Spark plugs', 'Carburetor / fuel injector', 'Air filter', 'Oil filter', 'Exhaust / muffler'],
+    },
+    {
+      id: 'wear-tear',
+      number: '02',
+      title: 'Wear-and-Tear',
+      description: 'Fast-moving replacement parts riders usually need during regular maintenance and everyday use.',
+      icon: CircleDot,
+      items: ['Tires', 'Inner tubes', 'Brake pads / brake shoes', 'Chain & sprocket set', 'Engine oil / lubricants'],
+    },
+    {
+      id: 'drive-control',
+      number: '03',
+      title: 'Drive & Control Parts',
+      description: 'Controls and drivetrain pieces that keep shifting, throttle response, and braking feel dependable.',
+      icon: Cable,
+      items: ['Clutch plates / clutch cable', 'Throttle cable', 'Gear shifter components', 'Brake levers & pedals'],
+    },
+    {
+      id: 'electrical-lighting',
+      number: '04',
+      title: 'Electrical & Lighting',
+      description: 'Power, visibility, and ignition components for everyday safety and dependable electrical performance.',
+      icon: Battery,
+      items: ['Battery', 'Headlight / taillight bulbs', 'Turn signals', 'Wiring / ignition switch'],
+    },
+    {
+      id: 'body-structural',
+      number: '05',
+      title: 'Body & Structural Parts',
+      description: 'Exterior and frame-adjacent pieces that shape comfort, appearance, and rider control.',
+      icon: Bike,
+      items: ['Side mirrors', 'Seat', 'Fuel tank', 'Fairings / body panels', 'Handlebars'],
+    },
+    {
+      id: 'suspension-braking',
+      number: '06',
+      title: 'Suspension & Braking System',
+      description: 'Stability and stopping hardware made to improve ride confidence, comfort, and braking response.',
+      icon: Shield,
+      items: ['Shock absorbers', 'Front forks', 'Brake discs / drums', 'Brake fluid'],
+    },
+  ];
+
+  const [openSection, setOpenSection] = useState(productSections[0].id);
+
+  return (
+    <section className="mt-10 mb-24 animate-in fade-in duration-700">
+      <div className="mb-8 px-1">
+        <p className={`${gradientTextClass} text-xs font-black uppercase tracking-[0.45em]`}>JBMS Products</p>
+        <h2 className="mt-4 max-w-4xl text-3xl font-black italic tracking-tight text-white sm:text-4xl lg:text-5xl">Browse parts by category and open a section to see what&apos;s inside.</h2>
+        <p className="mt-4 max-w-3xl text-xs font-bold uppercase tracking-[0.14em] text-gray-500 sm:text-sm">
+          Clean dropdown sections, quick scanning, and a focused active state.
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        {productSections.map((section) => {
+          const Icon = section.icon;
+          const isOpen = openSection === section.id;
+
+          return (
+            <div
+              key={section.id}
+              className={`group relative overflow-hidden rounded-[30px] border border-white/10 bg-[#141414] shadow-[0_20px_60px_rgba(0,0,0,0.32)] transition-all duration-300 ${
+                isOpen ? 'bg-[#191919]' : 'hover:bg-[#181818]'
+              }`}
+            >
+              <div
+                className={`pointer-events-none absolute inset-0 transition-opacity duration-300 ${
+                  isOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                }`}
+              >
+                <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-orange-400/70 to-transparent" />
+                <div className="absolute inset-5 rounded-[24px] bg-gradient-to-br from-[#ff3636]/10 via-[#f97215]/8 to-transparent blur-2xl" />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setOpenSection(isOpen ? '' : section.id)}
+                className="relative z-10 flex w-full items-start gap-4 p-5 text-left sm:items-center sm:gap-5 sm:p-6"
+              >
+                <div className="min-w-[34px] pt-1 text-[11px] font-black tracking-[0.35em] text-sky-200/70">
+                  {section.number}
+                </div>
+                <div
+                  className={`inline-flex rounded-2xl border p-3 transition-all duration-300 ${
+                    isOpen
+                      ? 'border-orange-400/50 bg-white/5 shadow-[0_0_28px_rgba(249,115,22,0.16)]'
+                      : 'border-white/10 bg-white/[0.02] group-hover:border-orange-400/40'
+                  }`}
+                >
+                  <Icon size={26} className={isOpen ? 'text-orange-300' : 'text-gray-400 transition-colors duration-300 group-hover:text-orange-300'} />
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-xl font-black uppercase tracking-tight text-white sm:text-2xl">
+                    {section.title}
+                  </h3>
+                  <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-400 sm:text-[15px]">
+                    {section.description}
+                  </p>
+                </div>
+
+                <div
+                  className={`mt-1 rounded-full border border-white/10 bg-white/[0.03] p-2 transition-all duration-300 sm:mt-0 ${
+                    isOpen ? 'rotate-180 border-orange-400/40 text-orange-300' : 'text-gray-400 group-hover:text-orange-300'
+                  }`}
+                >
+                  <ChevronDown size={18} />
+                </div>
+              </button>
+
+              <div
+                className={`relative z-10 grid transition-all duration-300 ease-out ${
+                  isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-70'
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <div className="border-t border-white/10 px-5 pb-5 pt-4 sm:px-6 sm:pb-6">
+                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                      {section.items.map((item) => (
+                        <div
+                          key={item}
+                          className="rounded-2xl border border-white/10 bg-[#1d1d1d] px-4 py-3 text-sm font-bold text-gray-200 shadow-[0_8px_22px_rgba(0,0,0,0.18)] transition-all duration-300 hover:border-orange-400/30 hover:bg-[#202020]"
+                        >
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function ServicesView() {
+  const services = [
+    {
+      id: 'general-repair',
+      number: '01',
+      title: 'General Repair',
+      description: 'Comprehensive maintenance and repair work for motorcycles, from tune-ups and oil changes to deeper engine fixes.',
+      icon: Wrench,
+    },
+    {
+      id: 'parts-accessories',
+      number: '02',
+      title: 'Parts & Accessories',
+      description: 'Wide selection of genuine and performance-focused components sourced for riders who want both reliability and style.',
+      icon: ShoppingBag,
+    },
+    {
+      id: 'online-booking',
+      number: '03',
+      title: 'Online Booking',
+      description: 'Reserve your service slot faster and keep scheduling simple when the shop is busy and your ride needs attention.',
+      icon: Calendar,
+    },
+    {
+      id: 'ai-diagnostics',
+      number: '04',
+      title: 'AI Diagnostics',
+      description: 'Get quicker issue spotting with a guided check flow that helps narrow down sounds, vibrations, and performance problems.',
+      icon: Cpu,
+    },
+    {
+      id: 'tire-wheel',
+      number: '05',
+      title: 'Tire & Wheel',
+      description: 'Tire fitting, balancing, and wheel care built for everyday riders, long-distance trips, and performance-minded setups.',
+      icon: Disc3,
+    },
+    {
+      id: 'service-history',
+      number: '06',
+      title: 'Service History',
+      description: 'Keep a clean record of maintenance visits and major repairs so future service decisions stay easier to track.',
+      icon: ClipboardList,
+    },
+  ];
+
+  const [selectedService, setSelectedService] = useState(services[0].id);
+
+  return (
+    <section className="mt-10 mb-24 animate-in fade-in duration-700">
+      <div className="mb-8 px-1">
+        <p className={`${gradientTextClass} text-xs font-black uppercase tracking-[0.45em]`}>JBMS Services</p>
+        <h2 className="mt-4 max-w-4xl text-3xl font-black italic tracking-tight text-white sm:text-4xl lg:text-5xl">Built for repair, upkeep, and ride-ready support.</h2>
+        <p className="mt-4 max-w-3xl text-xs font-bold uppercase tracking-[0.14em] text-gray-500 sm:text-sm">
+          Hover a card for a live highlight, or tap one to keep it selected.
+        </p>
+      </div>
+
+      <div className="grid overflow-hidden rounded-[38px] border border-white/10 bg-[#141414] shadow-[0_25px_80px_rgba(0,0,0,0.4)] md:grid-cols-2 xl:grid-cols-3">
+        {services.map((service, index) => {
+          const Icon = service.icon;
+          const isSelected = selectedService === service.id;
+          const borderClass = index === 0
+            ? ''
+            : index < 3
+              ? 'border-t md:border-t-0'
+              : 'border-t';
+
+          return (
+            <button
+              key={service.id}
+              type="button"
+              onClick={() => setSelectedService(service.id)}
+              className={`group relative min-h-[260px] border-white/10 p-6 text-left transition-all duration-300 ease-out focus:outline-none sm:p-8 md:border-r md:[&:nth-child(2n)]:border-r-0 xl:border-r xl:[&:nth-child(2n)]:border-r xl:[&:nth-child(3n)]:border-r-0 ${borderClass} ${isSelected ? 'bg-[#191919]' : 'bg-transparent hover:bg-[#181818]'}`}
+            >
+              <div
+                className={`pointer-events-none absolute inset-0 transition-all duration-300 ${
+                  isSelected
+                    ? 'opacity-100'
+                    : 'opacity-0 group-hover:opacity-100'
+                }`}
+              >
+                <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-orange-400/70 to-transparent" />
+                <div className="absolute inset-6 rounded-[28px] bg-gradient-to-br from-[#ff3636]/10 via-[#f97215]/8 to-transparent blur-2xl" />
+              </div>
+
+              <div
+                className={`relative z-10 h-full transition-all duration-300 ${
+                  isSelected ? 'scale-[1.02]' : 'group-hover:scale-[1.02]'
+                }`}
+              >
+                <p className="text-[11px] font-black tracking-[0.35em] text-sky-200/70">{service.number}</p>
+                <div
+                  className={`mt-8 inline-flex rounded-2xl border p-3 transition-all duration-300 ${
+                    isSelected
+                      ? 'border-orange-400/50 bg-white/5 shadow-[0_0_30px_rgba(249,115,22,0.18)]'
+                      : 'border-white/10 bg-white/[0.02] group-hover:border-orange-400/40 group-hover:shadow-[0_0_28px_rgba(249,115,22,0.14)]'
+                  }`}
+                >
+                  <Icon
+                    size={32}
+                    className={isSelected ? 'text-orange-300' : 'text-gray-400 transition-colors duration-300 group-hover:text-orange-300'}
+                  />
+                </div>
+                <h3 className="mt-7 text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
+                  {service.title}
+                </h3>
+                <p className="mt-4 max-w-[32ch] text-sm leading-7 text-gray-400 sm:text-base sm:leading-8">
+                  {service.description}
+                </p>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function PlaceholderView({ title, icon }) {
+  return (
+    <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+      {icon}
+      <h2 className="text-6xl font-black italic uppercase tracking-tighter text-white">{title}</h2>
+      <p className="text-gray-500 font-bold mt-4 tracking-[0.5em] uppercase text-xs">Section Under Construction</p>
+    </div>
+  );
+}
+
+// --- Chatbot Implementation ---
+function Chatbot({ isChatOpen, setIsChatOpen }) {
+  const [messages, setMessages] = useState([
+    { role: 'model', text: "Ride safe, Welcome to JBMS MOTOSHOP. AI Mechanic here to help!" }
+  ]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [messages, isChatOpen]);
+
+  // Helper for exponential backoff retries
+  const fetchWithRetry = async (url, options, retries = 5, backoff = 1000) => {
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      if (retries <= 0) throw error;
+      await new Promise(resolve => setTimeout(resolve, backoff));
+      return fetchWithRetry(url, options, retries - 1, backoff * 2);
+    }
+  };
+
+  const handleSend = async (e) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+
+    const userMsg = input.trim();
+    setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
+    setInput('');
+    setIsLoading(true);
+
+    try {
+      const history = messages.map(m => ({ role: m.role, parts: [{ text: m.text }] }));
+      history.push({ role: 'user', parts: [{ text: userMsg }] });
+
+      const data = await fetchWithRetry(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            contents: history, 
+            systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] } 
+          })
+        }
+      );
+
+      const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "I am so sorry but can you clarify your inquiry?";
+      setMessages(prev => [...prev, { role: 'model', text: aiResponse }]);
+    } catch (err) {
+      setMessages(prev => [...prev, { role: 'model', text: "I can't connect to the server right now please try again later Thank you." }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed bottom-6 right-6 z-[9999]">
+      {!isChatOpen && (
+        <button 
+          onClick={() => setIsChatOpen(true)} 
+          className={`${gradientSurfaceClass} text-white p-5 rounded-full shadow-[0_20px_50px_rgba(249,115,22,0.4)] hover:scale-110 active:scale-95 transition-all animate-pulse-orange group flex items-center justify-center`}
+        >
+          <MessageCircle size={36} className="group-hover:rotate-12 transition-transform fill-white/10" />
+        </button>
+      )}
+
+      {isChatOpen && (
+        <div className="w-[336px] max-w-[88vw] h-[520px] max-h-[80vh] bg-[#282828] border-2 border-white/10 rounded-[32px] shadow-[0_30px_100px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden chat-slide-up">
+          <div className="bg-gradient-to-r from-[#ff3636] to-[#f97215] p-5 flex items-center justify-between shadow-2xl">
+            <div className="flex items-center gap-3">
+              <div className="bg-white/20 p-2 rounded-2xl backdrop-blur-md ring-1 ring-white/30">
+                <Wrench size={20} className="text-white" />
+              </div>
+              <div>
+                <h3 className="font-black text-lg text-white italic tracking-tighter leading-none uppercase">AI Mechanic</h3>
+                <p className="text-[10px] font-black text-orange-100 uppercase tracking-widest mt-1 opacity-80">Online • MOTOSHOP PH</p>
+              </div>
+            </div>
+            <button onClick={() => setIsChatOpen(false)} className="hover:rotate-90 transition-transform bg-black/20 p-2 rounded-full text-white shadow-lg">
+              <X size={20} />
+            </button>
+          </div>
+
+          <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-5 bg-[#1a1a1a] custom-scrollbar">
+            {messages.map((msg, i) => (
+              <div key={i} className={`flex items-start gap-2.5 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                <div className={`p-2 rounded-2xl ${msg.role === 'user' ? 'bg-orange-500/20' : 'bg-white/5'}`}>
+                  {msg.role === 'user' ? <User size={16} className="text-orange-400" /> : <Wrench size={16} className="text-gray-400" />}
+                </div>
+                <div className={`max-w-[78%] rounded-[24px] px-5 py-3.5 text-sm font-bold shadow-xl leading-relaxed
+                  ${msg.role === 'user' 
+                    ? 'bg-gradient-to-r from-[#ff3636] to-[#f97215] text-white rounded-tr-none' 
+                    : 'bg-[#333333] text-gray-100 rounded-tl-none border border-white/5'}`}>
+                  {msg.text}
+                </div>
+              </div>
+            ))}
+            {isLoading && (
+              <div className="flex justify-start items-center gap-2.5">
+                <div className="p-2 rounded-2xl bg-white/5"><Wrench size={16} className="text-gray-600 animate-spin" /></div>
+                <div className="bg-[#333333] px-5 py-3.5 rounded-[24px] rounded-tl-none flex gap-1.5">
+                  <div className="w-2 h-2 rounded-full animate-bounce bg-gradient-to-r from-[#ff3636] to-[#f97215]"></div>
+                  <div className="w-2 h-2 rounded-full animate-bounce [animation-delay:0.2s] bg-gradient-to-r from-[#ff3636] to-[#f97215]"></div>
+                  <div className="w-2 h-2 rounded-full animate-bounce [animation-delay:0.4s] bg-gradient-to-r from-[#ff3636] to-[#f97215]"></div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <form onSubmit={handleSend} className="p-5 bg-[#282828] border-t border-white/5">
+            <div className="relative group">
+              <input
+                type="text" 
+                value={input} 
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="What's your question?"
+                className="w-full bg-[#333333] border-2 border-white/5 rounded-full py-4 pl-6 pr-14 text-sm font-bold focus:outline-none focus:border-orange-500 transition-all text-white placeholder:text-gray-600"
+              />
+              <button 
+                type="submit" 
+                className={`${gradientSurfaceClass} absolute right-2 top-2 p-3 rounded-full text-white transition-all shadow-xl hover:scale-105 active:scale-95 hover:shadow-[0_16px_28px_rgba(249,115,22,0.28)]`}
+              >
+                <Send size={18} />
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}
