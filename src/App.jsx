@@ -9,6 +9,7 @@ import gal3 from './gal3.jpg';
 import gal4 from './gal4.jpg';
 import gal5 from './gal5.png';
 import gal6 from './gal6.png';
+import gal7 from './gal7.png';
 import motGif from './mot.gif';
 import motTwoGif from './mot2.gif';
 
@@ -660,16 +661,36 @@ function PlaceholderView({ title, icon }) {
 }
 
 function GalleryView() {
-  const galleryImages = [gal1, gal2, gal3, gal4, gal5, gal6];
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const galleryImages = [gal1, gal2, gal3, gal4, gal5, gal6, gal7];
+  const loopedGalleryImages = [...galleryImages, galleryImages[0]];
+  const [sliderIndex, setSliderIndex] = useState(0);
+  const [isSliderTransitionEnabled, setIsSliderTransitionEnabled] = useState(true);
+  const activeImageIndex = sliderIndex % galleryImages.length;
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
-      setActiveImageIndex((currentIndex) => (currentIndex + 1) % galleryImages.length);
+      setSliderIndex((currentIndex) => currentIndex + 1);
     }, 3500);
 
     return () => window.clearInterval(intervalId);
-  }, [galleryImages.length]);
+  }, []);
+
+  useEffect(() => {
+    if (!isSliderTransitionEnabled) {
+      const timeoutId = window.setTimeout(() => {
+        setIsSliderTransitionEnabled(true);
+      }, 60);
+
+      return () => window.clearTimeout(timeoutId);
+    }
+  }, [isSliderTransitionEnabled]);
+
+  const handleSliderTransitionEnd = () => {
+    if (sliderIndex === galleryImages.length) {
+      setIsSliderTransitionEnabled(false);
+      setSliderIndex(0);
+    }
+  };
 
   return (
     <section className="mt-10 mb-24 animate-in fade-in duration-700">
@@ -686,11 +707,20 @@ function GalleryView() {
       <div className="rounded-[38px] border border-white/10 bg-[#111111] p-5 shadow-[0_25px_80px_rgba(0,0,0,0.4)] sm:p-8 lg:p-10">
         <div className="mx-auto max-w-5xl">
           <div className="relative overflow-hidden rounded-[30px] border border-white/40 bg-black">
-            <img
-              src={galleryImages[activeImageIndex]}
-              alt={`JBMS gallery ${activeImageIndex + 1}`}
-              className="h-[320px] w-full object-cover sm:h-[420px] lg:h-[560px]"
-            />
+            <div
+              className={`flex ${isSliderTransitionEnabled ? 'transition-transform duration-700 ease-out' : ''}`}
+              style={{ transform: `translateX(-${sliderIndex * 100}%)` }}
+              onTransitionEnd={handleSliderTransitionEnd}
+            >
+              {loopedGalleryImages.map((imageSrc, index) => (
+                <img
+                  key={`${imageSrc}-${index}`}
+                  src={imageSrc}
+                  alt={`JBMS gallery ${((index % galleryImages.length) || galleryImages.length)}`}
+                  className="h-[320px] w-full min-w-full object-cover sm:h-[420px] lg:h-[560px]"
+                />
+              ))}
+            </div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between gap-4 p-6 sm:p-8">
               <div>
@@ -699,21 +729,21 @@ function GalleryView() {
               </div>
               <div className="hidden rounded-[24px] border border-white/10 bg-black/45 px-4 py-3 text-right backdrop-blur-md md:block">
                 <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gray-400">Auto Scroll</p>
-                <p className="mt-2 text-base font-black text-white">{String(activeImageIndex + 1).padStart(2, '0')} / 06</p>
+                <p className="mt-2 text-base font-black text-white">{String(activeImageIndex + 1).padStart(2, '0')} / 07</p>
               </div>
             </div>
           </div>
 
-          <div className="mt-6 overflow-hidden">
-            <div
-              className="flex gap-4 transition-transform duration-700 ease-out"
-              style={{ transform: `translateX(-${activeImageIndex * (100 / galleryImages.length)}%)` }}
-            >
+          <div className="mt-6 overflow-x-auto">
+            <div className="flex gap-4 pb-2">
               {galleryImages.map((imageSrc, index) => (
                 <button
                   key={imageSrc}
                   type="button"
-                  onClick={() => setActiveImageIndex(index)}
+                  onClick={() => {
+                    setIsSliderTransitionEnabled(true);
+                    setSliderIndex(index);
+                  }}
                   className={`min-w-[180px] overflow-hidden rounded-[22px] border transition-all duration-300 sm:min-w-[220px] ${
                     index === activeImageIndex
                       ? 'border-orange-400/70 ring-1 ring-orange-400/20 shadow-[0_0_24px_rgba(249,115,22,0.16)]'
