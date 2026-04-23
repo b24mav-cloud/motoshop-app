@@ -3,6 +3,12 @@ import { MessageCircle, X, Send, Wrench, BookOpen, HelpCircle, ShoppingBag, User
 import jbmsLogo from './jbms.png';
 import carGif from './car1.gif';
 import carTwoGif from './car2.gif';
+import gal1 from './gal1.jpg';
+import gal2 from './gal2.jpg';
+import gal3 from './gal3.jpg';
+import gal4 from './gal4.jpg';
+import gal5 from './gal5.png';
+import gal6 from './gal6.png';
 import motGif from './mot.gif';
 import motTwoGif from './mot2.gif';
 
@@ -10,7 +16,7 @@ import motTwoGif from './mot2.gif';
  * --- MOTOSHOP AI MECHANIC CONFIGURATION ---
  * The environment provides the API key at runtime.
  */
-const apiKey = ""; 
+const apiKey = "";
 
 const SYSTEM_PROMPT = `You are the MOTOSHOP AI Mechanic, a specialist in motorcycles and cars in the Philippines. 
 Your tone is helpful, expert, and friendly (using common Pinoy rider terms like "Paps" or "Ride Safe").
@@ -31,8 +37,7 @@ export default function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#222222] text-white font-sans selection:bg-orange-500 pb-24 overflow-x-hidden">
-      {/* Dynamic Styles for Animations */}
+    <div className="min-h-screen overflow-x-hidden bg-black pb-24 font-sans text-white selection:bg-orange-500">
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes pulse-orange {
           0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7); }
@@ -55,61 +60,62 @@ export default function App() {
       `}} />
 
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
-      
-      <main className="max-w-6xl mx-auto px-4 pt-4">
+
+      <main className="w-full px-3 pt-6 sm:px-4 lg:px-6 xl:px-8 2xl:px-10">
         {activeTab === 'home' && <HomeView setActiveTab={setActiveTab} />}
         {activeTab === 'products' && <ProductsView />}
         {activeTab === 'services' && <ServicesView />}
         {activeTab === 'about' && <PlaceholderView title="About" icon={<BookOpen size={48} className={`${gradientTextClass} mb-4`} />} />}
-        {activeTab === 'help' && <PlaceholderView title="Help" icon={<HelpCircle size={48} className={`${gradientTextClass} mb-4`} />} />}
+        {activeTab === 'help' && <GalleryView />}
         {activeTab === 'join' && <JoinView />}
       </main>
 
-      {/* Floating Chatbot Component */}
       <Chatbot isChatOpen={isChatOpen} setIsChatOpen={setIsChatOpen} />
     </div>
   );
 }
 
-// --- Navigation ---
 function Navbar({ activeTab, setActiveTab }) {
   const navItems = [
     { id: 'products', label: 'PRODUCTS' },
     { id: 'services', label: 'SERVICES' },
+    { id: 'help', label: 'GALLERY' },
     { id: 'about', label: 'ABOUT' },
-    { id: 'help', label: 'HELP' },
   ];
 
   return (
-    <nav className="bg-[#333333] sticky top-0 z-50 shadow-2xl border-b border-white/5">
-      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setActiveTab('home')}>
-          <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-orange-500/70 bg-[#242424] p-2 shadow-[0_8px_22px_rgba(249,115,22,0.22)] ring-1 ring-white/10 transition-transform group-hover:scale-105">
+    <nav className="sticky top-0 z-50 border-b border-white/10 bg-black/95 shadow-2xl backdrop-blur-xl">
+      <div className="flex w-full items-center justify-between gap-4 px-3 py-4 sm:px-4 lg:px-6 xl:px-8 2xl:px-10">
+        <div className="group flex cursor-pointer items-center gap-3" onClick={() => setActiveTab('home')}>
+          <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-orange-500/70 bg-[#111111] p-2 shadow-[0_8px_22px_rgba(249,115,22,0.22)] ring-1 ring-white/10 transition-transform group-hover:scale-105">
             <img
               src={jbmsLogo}
               alt="JBMS MOTOSHOP logo"
               className="h-full w-full rounded-full object-cover"
             />
           </div>
-          <span className="font-black text-2xl tracking-tighter italic text-white">JBMS MOTOSHOP</span>
+          <span className="text-2xl font-black italic tracking-tighter text-white">JBMS MOTOSHOP</span>
         </div>
-        <div className="hidden md:flex gap-2">
+
+        <div className="hidden gap-2 md:flex">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`px-4 py-2 rounded-full text-[9px] font-black tracking-[0.16em] transition-all lg:px-5
-                ${activeTab === item.id 
+              className={`rounded-full px-5 py-2.5 text-[12px] font-black tracking-[0.16em] transition-all lg:px-6 ${
+                activeTab === item.id
                   ? `${gradientSurfaceClass} text-white shadow-lg`
-                  : 'bg-[#444444] text-gray-400 hover:bg-[#555555] border border-transparent'}`}
+                  : 'border border-white/10 bg-[#1a1a1a] text-gray-400 hover:bg-[#242424]'
+              }`}
             >
               {item.label}
             </button>
           ))}
         </div>
+
         <button
           onClick={() => setActiveTab('join')}
-          className={`${gradientSurfaceClass} px-4 py-2 rounded-2xl text-[9px] font-black text-white uppercase tracking-[0.12em] shadow-[0_14px_30px_rgba(249,115,22,0.24)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(249,115,22,0.28)] lg:px-5`}
+          className={`${gradientSurfaceClass} rounded-2xl px-5 py-2.5 text-[12px] font-black uppercase tracking-[0.12em] text-white shadow-[0_14px_30px_rgba(249,115,22,0.24)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(249,115,22,0.28)] lg:px-6`}
         >
           Join Us Now
         </button>
@@ -118,58 +124,83 @@ function Navbar({ activeTab, setActiveTab }) {
   );
 }
 
-// --- Views ---
 function HomeView({ setActiveTab }) {
   return (
-    <div className="flex flex-col items-center gap-16 mt-12 animate-in fade-in duration-700">
-      <div className="text-center">
-        <div className="flex flex-col items-center justify-center gap-5 mb-4 sm:flex-row sm:gap-6">
-          <div className="flex h-28 w-28 items-center justify-center rounded-full border-[3px] border-orange-500/80 bg-[#2a2a2a] p-3 shadow-[0_18px_45px_rgba(249,115,22,0.2)] ring-1 ring-white/10 sm:h-32 sm:w-32">
-            <img
-              src={jbmsLogo}
-              alt="JBMS MOTOSHOP logo"
-              className="h-full w-full rounded-full object-cover"
-            />
+    <div className="mt-10 flex flex-col gap-10 animate-in fade-in duration-700 lg:mt-12">
+      <section className="grid items-center gap-10 border-y border-white/10 bg-[#101010] px-5 py-10 shadow-[0_30px_90px_rgba(0,0,0,0.45)] lg:grid-cols-[1fr_1.45fr] lg:px-8 xl:px-10 2xl:px-12">
+        <div className="text-center lg:text-left">
+          <div className="mb-5 flex flex-col items-center justify-center gap-5 sm:flex-row sm:gap-6 lg:justify-start">
+            <div className="flex h-28 w-28 items-center justify-center rounded-full border-[3px] border-orange-500/80 bg-[#1a1a1a] p-3 shadow-[0_18px_45px_rgba(249,115,22,0.2)] ring-1 ring-white/10 sm:h-32 sm:w-32">
+              <img
+                src={jbmsLogo}
+                alt="JBMS MOTOSHOP logo"
+                className="h-full w-full rounded-full object-cover"
+              />
+            </div>
+            <h1 className="text-5xl font-black italic tracking-tighter text-white sm:text-6xl xl:text-7xl">JBMS MOTOSHOP</h1>
           </div>
-          <h1 className="text-7xl font-black tracking-tighter italic text-white">JBMS MOTOSHOP</h1>
-        </div>
-        <h2 className="text-5xl font-black tracking-tight mb-4 uppercase text-white">Gear Up. Ride Hard.</h2>
-        <p className="text-sm font-bold text-gray-400 tracking-[0.3em] uppercase">Premium Parts • Expert Service • PH Choice</p>
-      </div>
 
-      <div className="w-full max-w-5xl rounded-[60px] p-3 bg-[#333333] border border-white/10 shadow-2xl relative overflow-hidden">
-        <div className="relative h-[450px] rounded-[50px] overflow-hidden">
-           <img 
-            src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1200" 
-            alt="Biker" 
-            className="w-full h-full object-cover brightness-90" 
-           />
-           <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-             <button
-               onClick={() => setActiveTab('join')}
-               className={`${gradientSurfaceClass} px-16 py-5 rounded-full font-black text-2xl shadow-2xl transition-all hover:scale-110 hover:shadow-[0_24px_50px_rgba(249,115,22,0.32)] italic tracking-tighter text-white`}
-             >
-               GET STARTED
-             </button>
-           </div>
-        </div>
-      </div>
+          <h2 className="text-4xl font-black uppercase tracking-tight text-white sm:text-5xl xl:text-6xl">Gear Up. Ride Hard.</h2>
+          <p className="mt-5 text-sm font-bold uppercase tracking-[0.3em] text-gray-400">Premium Parts • Expert Service • PH Choice</p>
+          <p className="mt-6 max-w-3xl text-base leading-7 text-gray-300 xl:max-w-2xl">
+            Built like a real storefront now: wider, bolder, and easier to scan across the full browser width while keeping the shop branding front and center.
+          </p>
 
-      <div className="w-full max-w-5xl bg-[#333333] rounded-[60px] p-16 text-center space-y-20 border border-white/10 shadow-2xl mb-24 relative overflow-hidden">
-        <div className="relative z-10">
-          <h3 className="text-6xl font-black italic mb-2 text-white">Service Fast.</h3>
-          <p className={`${gradientTextClass} font-black text-xl uppercase tracking-widest`}>Premium Parts & Maintenance</p>
+          <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row lg:justify-start">
+            <button
+              onClick={() => setActiveTab('join')}
+              className={`${gradientSurfaceClass} rounded-full px-10 py-4 text-lg font-black italic tracking-tight text-white shadow-[0_24px_50px_rgba(249,115,22,0.32)] transition-all hover:scale-105 hover:shadow-[0_28px_60px_rgba(249,115,22,0.36)]`}
+            >
+              GET STARTED
+            </button>
+            <button
+              onClick={() => setActiveTab('products')}
+              className="rounded-full border border-white/10 bg-[#1a1a1a] px-10 py-4 text-sm font-black uppercase tracking-[0.18em] text-gray-200 transition-all hover:border-orange-400/40 hover:bg-[#202020]"
+            >
+              Explore Products
+            </button>
+          </div>
         </div>
-        <div className="relative z-10">
-          <h3 className="text-6xl font-black italic mb-2 text-white">Powered By Performance</h3>
-          <p className={`${gradientTextClass} font-black text-xl uppercase tracking-widest`}>Top-Tier Engine Components</p>
+
+        <div className="w-full rounded-[36px] border border-white/10 bg-[#1a1a1a] p-3 shadow-2xl">
+          <div className="relative h-[320px] overflow-hidden rounded-[28px] sm:h-[420px] xl:h-[520px]">
+            <img
+              src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1600"
+              alt="Biker"
+              className="h-full w-full object-cover brightness-90"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/20 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-6 sm:p-8">
+              <div>
+                <p className={`${gradientTextClass} text-xs font-black uppercase tracking-[0.4em]`}>Website View</p>
+                <h3 className="mt-3 text-3xl font-black italic text-white sm:text-4xl">Full-width showroom feel.</h3>
+              </div>
+              <div className="hidden rounded-[28px] border border-white/10 bg-black/45 px-5 py-4 text-right backdrop-blur-md md:block">
+                <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gray-400">Open Daily</p>
+                <p className="mt-2 text-lg font-black text-white">Parts. Service. Support.</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="relative z-10">
-          <h3 className="text-6xl font-black italic mb-2 text-white">Built To Last</h3>
-          <p className={`${gradientTextClass} font-black text-xl uppercase tracking-widest`}>Global Quality Brands</p>
+      </section>
+
+      <section className="relative mb-24 overflow-hidden border-y border-white/10 bg-[#141414] px-5 py-12 text-center shadow-[0_30px_90px_rgba(0,0,0,0.45)] sm:px-8 xl:px-10 2xl:px-12">
+        <div className="grid gap-12 lg:grid-cols-3 lg:gap-10">
+          <div className="relative z-10">
+            <h3 className="mb-2 text-5xl font-black italic text-white xl:text-6xl">Service Fast.</h3>
+            <p className={`${gradientTextClass} text-lg font-black uppercase tracking-widest xl:text-xl`}>Premium Parts & Maintenance</p>
+          </div>
+          <div className="relative z-10">
+            <h3 className="mb-2 text-5xl font-black italic text-white xl:text-6xl">Powered By Performance</h3>
+            <p className={`${gradientTextClass} text-lg font-black uppercase tracking-widest xl:text-xl`}>Top-Tier Engine Components</p>
+          </div>
+          <div className="relative z-10">
+            <h3 className="mb-2 text-5xl font-black italic text-white xl:text-6xl">Built To Last</h3>
+            <p className={`${gradientTextClass} text-lg font-black uppercase tracking-widest xl:text-xl`}>Global Quality Brands</p>
+          </div>
         </div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[20rem] font-black opacity-[0.02] pointer-events-none italic select-none text-white">MOTO</div>
-      </div>
+        <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-[20rem] font-black italic text-white opacity-[0.02]">MOTO</div>
+      </section>
     </div>
   );
 }
@@ -187,20 +218,22 @@ function JoinView() {
   }, [bannerItems.length]);
 
   return (
-    <div className="mt-12 mb-24 flex justify-center animate-in fade-in duration-700">
-      <section className="w-full max-w-3xl rounded-[52px] border border-white/10 bg-[#333333] p-6 shadow-2xl sm:p-10">
-        <div className="rounded-[42px] border border-white/10 bg-[#2a2a2a] p-8 shadow-[0_20px_45px_rgba(0,0,0,0.28)]">
-          <p className={`${gradientTextClass} text-xs font-black uppercase tracking-[0.45em]`}>Join JBMS</p>
-          <h2 className="mt-4 text-5xl font-black italic tracking-tight text-white">Stay in the loop.</h2>
-          <p className="mt-4 text-sm font-bold uppercase tracking-[0.2em] text-gray-400">
-            Leave your email and we can wire up the real submit flow later.
-          </p>
+    <div className="mt-12 mb-24 animate-in fade-in duration-700">
+      <section className="w-full border-y border-white/10 bg-[#111111] p-6 shadow-2xl sm:p-10 xl:px-14">
+        <div className="mx-auto flex w-full max-w-5xl flex-col rounded-[42px] border border-white/10 bg-[#2a2a2a] px-6 py-10 text-center shadow-[0_20px_45px_rgba(0,0,0,0.28)] sm:px-10 lg:px-14">
+          <div>
+            <p className={`${gradientTextClass} text-xs font-black uppercase tracking-[0.45em]`}>Join JBMS</p>
+            <h2 className="mt-4 text-5xl font-black italic tracking-tight text-white sm:text-6xl">Stay in the loop.</h2>
+            <p className="mx-auto mt-5 max-w-3xl text-sm font-bold uppercase tracking-[0.24em] text-gray-400 sm:text-base">
+              Leave your email and we can wire up the real submit flow later.
+            </p>
+          </div>
 
-          <div className="mt-8 flex justify-center">
-            <div className="w-full max-w-[480px] rounded-[34px] border border-orange-400/30 bg-[#1f1f1f] p-3 shadow-[0_20px_45px_rgba(249,115,22,0.12)]">
+          <div className="mt-10 flex justify-center">
+            <div className="w-full max-w-[620px] rounded-[34px] border border-orange-400/30 bg-[#1a1a1a] p-4 shadow-[0_20px_45px_rgba(249,115,22,0.12)]">
               <div className="overflow-hidden rounded-[26px] border border-white/10">
                 <div
-                  className="flex h-[200px] transition-transform duration-700 ease-out"
+                  className="flex h-[220px] transition-transform duration-700 ease-out sm:h-[250px]"
                   style={{ transform: `translateX(-${activeBannerIndex * 100}%)` }}
                 >
                   {bannerItems.map((bannerSrc, index) => (
@@ -208,7 +241,7 @@ function JoinView() {
                       key={bannerSrc}
                       src={bannerSrc}
                       alt={`JBMS MOTOSHOP banner ${index + 1}`}
-                      className="h-[200px] w-full min-w-full object-cover"
+                      className="h-[220px] w-full min-w-full object-cover sm:h-[250px]"
                     />
                   ))}
                 </div>
@@ -226,15 +259,15 @@ function JoinView() {
             </div>
           </div>
 
-          <form className="mt-10 space-y-4">
+          <form className="mx-auto mt-12 flex w-full max-w-[760px] flex-col gap-5">
             <input
               type="email"
               placeholder="Enter your email address"
-              className="w-full rounded-3xl border border-white/10 bg-[#1f1f1f] px-5 py-4 text-sm font-bold text-white outline-none transition-all placeholder:text-gray-500 focus:border-orange-500"
+              className="w-full rounded-3xl border border-white/10 bg-[#1a1a1a] px-6 py-5 text-base font-bold text-white outline-none transition-all placeholder:text-gray-500 focus:border-orange-500"
             />
             <button
               type="button"
-              className={`${gradientSurfaceClass} w-full rounded-3xl px-5 py-4 text-sm font-black uppercase tracking-[0.3em] text-white shadow-[0_18px_35px_rgba(249,115,22,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_40px_rgba(249,115,22,0.34)]`}
+              className={`${gradientSurfaceClass} w-full rounded-3xl px-6 py-5 text-sm font-black uppercase tracking-[0.3em] text-white shadow-[0_18px_35px_rgba(249,115,22,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_40px_rgba(249,115,22,0.34)]`}
             >
               Submit
             </button>
@@ -303,13 +336,13 @@ function ProductsView() {
     <section className="mt-10 mb-24 animate-in fade-in duration-700">
       <div className="mb-8 px-1">
         <p className={`${gradientTextClass} text-xs font-black uppercase tracking-[0.45em]`}>JBMS Products</p>
-        <h2 className="mt-4 max-w-4xl text-3xl font-black italic tracking-tight text-white sm:text-4xl lg:text-5xl">Browse parts by category and open a section to see what&apos;s inside.</h2>
-        <p className="mt-4 max-w-3xl text-xs font-bold uppercase tracking-[0.14em] text-gray-500 sm:text-sm">
+        <h2 className="mt-4 max-w-6xl text-3xl font-black italic tracking-tight text-white sm:text-4xl lg:text-5xl">Browse parts by category and open a section to see what&apos;s inside.</h2>
+        <p className="mt-4 max-w-5xl text-xs font-bold uppercase tracking-[0.14em] text-gray-500 sm:text-sm">
           Clean dropdown sections, quick scanning, and a focused active state.
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="grid items-start gap-5 lg:grid-cols-2">
         {productSections.map((section) => {
           const Icon = section.icon;
           const isOpen = openSection === section.id;
@@ -317,8 +350,8 @@ function ProductsView() {
           return (
             <div
               key={section.id}
-              className={`group relative overflow-hidden rounded-[30px] border border-white/10 bg-[#141414] shadow-[0_20px_60px_rgba(0,0,0,0.32)] transition-all duration-300 ${
-                isOpen ? 'bg-[#191919]' : 'hover:bg-[#181818]'
+              className={`group relative self-start overflow-hidden rounded-[32px] border border-white/12 bg-[#111111] shadow-[0_20px_60px_rgba(0,0,0,0.35)] transition-all duration-300 ${
+                isOpen ? 'bg-[#181818] ring-1 ring-orange-400/20' : 'hover:border-white/20 hover:bg-[#161616]'
               }`}
             >
               <div
@@ -327,38 +360,44 @@ function ProductsView() {
                 }`}
               >
                 <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-orange-400/70 to-transparent" />
-                <div className="absolute inset-5 rounded-[24px] bg-gradient-to-br from-[#ff3636]/10 via-[#f97215]/8 to-transparent blur-2xl" />
+                <div className="absolute inset-6 rounded-[28px] bg-gradient-to-br from-[#ff3636]/10 via-[#f97215]/8 to-transparent blur-2xl" />
               </div>
 
               <button
                 type="button"
                 onClick={() => setOpenSection(isOpen ? '' : section.id)}
-                className="relative z-10 flex w-full items-start gap-4 p-5 text-left sm:items-center sm:gap-5 sm:p-6"
+                className="relative z-10 flex w-full items-start gap-4 p-6 text-left transition-all duration-300 ease-out focus:outline-none sm:gap-5 sm:p-8"
               >
                 <div className="min-w-[34px] pt-1 text-[11px] font-black tracking-[0.35em] text-sky-200/70">
                   {section.number}
                 </div>
-                <div
-                  className={`inline-flex rounded-2xl border p-3 transition-all duration-300 ${
-                    isOpen
-                      ? 'border-orange-400/50 bg-white/5 shadow-[0_0_28px_rgba(249,115,22,0.16)]'
-                      : 'border-white/10 bg-white/[0.02] group-hover:border-orange-400/40'
-                  }`}
-                >
-                  <Icon size={26} className={isOpen ? 'text-orange-300' : 'text-gray-400 transition-colors duration-300 group-hover:text-orange-300'} />
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-xl font-black uppercase tracking-tight text-white sm:text-2xl">
+                <div className={`min-w-0 flex-1 transition-all duration-300 ${isOpen ? 'scale-[1.01]' : 'group-hover:scale-[1.01]'}`}>
+                  <div
+                    className={`inline-flex rounded-2xl border p-3 transition-all duration-300 ${
+                      isOpen
+                        ? 'border-orange-400/50 bg-white/5 shadow-[0_0_30px_rgba(249,115,22,0.18)]'
+                        : 'border-white/10 bg-white/[0.02] group-hover:border-orange-400/40 group-hover:shadow-[0_0_28px_rgba(249,115,22,0.14)]'
+                    }`}
+                  >
+                    <Icon size={26} className={isOpen ? 'text-orange-300' : 'text-gray-400 transition-colors duration-300 group-hover:text-orange-300'} />
+                  </div>
+                  <h3 className="mt-8 text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
                     {section.title}
                   </h3>
-                  <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-400 sm:text-[15px]">
+                  <p
+                    className="mt-4 overflow-hidden pr-2 text-sm leading-7 text-gray-400 sm:text-base sm:leading-8"
+                    style={{
+                      display: '-webkit-box',
+                      WebkitBoxOrient: 'vertical',
+                      WebkitLineClamp: 2,
+                    }}
+                  >
                     {section.description}
                   </p>
                 </div>
 
                 <div
-                  className={`mt-1 rounded-full border border-white/10 bg-white/[0.03] p-2 transition-all duration-300 sm:mt-0 ${
+                  className={`mt-1 rounded-full border border-white/10 bg-white/[0.03] p-2 transition-all duration-300 ${
                     isOpen ? 'rotate-180 border-orange-400/40 text-orange-300' : 'text-gray-400 group-hover:text-orange-300'
                   }`}
                 >
@@ -372,12 +411,12 @@ function ProductsView() {
                 }`}
               >
                 <div className="overflow-hidden">
-                  <div className="border-t border-white/10 px-5 pb-5 pt-4 sm:px-6 sm:pb-6">
-                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  <div className="border-t border-white/10 px-6 pb-6 pt-5 sm:px-8 sm:pb-8">
+                    <div className="grid gap-3 sm:grid-cols-2">
                       {section.items.map((item) => (
                         <div
                           key={item}
-                          className="rounded-2xl border border-white/10 bg-[#1d1d1d] px-4 py-3 text-sm font-bold text-gray-200 shadow-[0_8px_22px_rgba(0,0,0,0.18)] transition-all duration-300 hover:border-orange-400/30 hover:bg-[#202020]"
+                          className="rounded-2xl border border-white/10 bg-[#202020] px-4 py-4 text-sm font-bold text-gray-200 shadow-[0_8px_22px_rgba(0,0,0,0.18)] transition-all duration-300 hover:border-orange-400/30 hover:bg-[#262626]"
                         >
                           {item}
                         </div>
@@ -446,13 +485,13 @@ function ServicesView() {
     <section className="mt-10 mb-24 animate-in fade-in duration-700">
       <div className="mb-8 px-1">
         <p className={`${gradientTextClass} text-xs font-black uppercase tracking-[0.45em]`}>JBMS Services</p>
-        <h2 className="mt-4 max-w-4xl text-3xl font-black italic tracking-tight text-white sm:text-4xl lg:text-5xl">Built for repair, upkeep, and ride-ready support.</h2>
-        <p className="mt-4 max-w-3xl text-xs font-bold uppercase tracking-[0.14em] text-gray-500 sm:text-sm">
+        <h2 className="mt-4 max-w-6xl text-3xl font-black italic tracking-tight text-white sm:text-4xl lg:text-5xl">Built for repair, upkeep, and ride-ready support.</h2>
+        <p className="mt-4 max-w-5xl text-xs font-bold uppercase tracking-[0.14em] text-gray-500 sm:text-sm">
           Hover a card for a live highlight, or tap one to keep it selected.
         </p>
       </div>
 
-      <div className="grid overflow-hidden rounded-[38px] border border-white/10 bg-[#141414] shadow-[0_25px_80px_rgba(0,0,0,0.4)] md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid overflow-hidden border border-white/10 bg-[#111111] shadow-[0_25px_80px_rgba(0,0,0,0.4)] md:grid-cols-2 xl:grid-cols-3">
         {services.map((service, index) => {
           const Icon = service.icon;
           const isSelected = selectedService === service.id;
@@ -467,7 +506,7 @@ function ServicesView() {
               key={service.id}
               type="button"
               onClick={() => setSelectedService(service.id)}
-              className={`group relative min-h-[260px] border-white/10 p-6 text-left transition-all duration-300 ease-out focus:outline-none sm:p-8 md:border-r md:[&:nth-child(2n)]:border-r-0 xl:border-r xl:[&:nth-child(2n)]:border-r xl:[&:nth-child(3n)]:border-r-0 ${borderClass} ${isSelected ? 'bg-[#191919]' : 'bg-transparent hover:bg-[#181818]'}`}
+              className={`group relative min-h-[260px] border-white/10 p-6 text-left transition-all duration-300 ease-out focus:outline-none sm:p-8 md:border-r md:[&:nth-child(2n)]:border-r-0 xl:border-r xl:[&:nth-child(2n)]:border-r xl:[&:nth-child(3n)]:border-r-0 ${borderClass} ${isSelected ? 'bg-[#181818]' : 'bg-transparent hover:bg-[#151515]'}`}
             >
               <div
                 className={`pointer-events-none absolute inset-0 transition-all duration-300 ${
@@ -515,15 +554,101 @@ function ServicesView() {
 
 function PlaceholderView({ title, icon }) {
   return (
-    <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+    <div className="flex h-[60vh] flex-col items-center justify-center text-center">
       {icon}
       <h2 className="text-6xl font-black italic uppercase tracking-tighter text-white">{title}</h2>
-      <p className="text-gray-500 font-bold mt-4 tracking-[0.5em] uppercase text-xs">Section Under Construction</p>
+      <p className="mt-4 text-xs font-bold uppercase tracking-[0.5em] text-gray-500">Section Under Construction</p>
     </div>
   );
 }
 
-// --- Chatbot Implementation ---
+function GalleryView() {
+  const galleryImages = [gal1, gal2, gal3, gal4, gal5, gal6];
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setActiveImageIndex((currentIndex) => (currentIndex + 1) % galleryImages.length);
+    }, 3500);
+
+    return () => window.clearInterval(intervalId);
+  }, [galleryImages.length]);
+
+  return (
+    <section className="mt-10 mb-24 animate-in fade-in duration-700">
+      <div className="mb-8 px-1 text-center">
+        <p className={`${gradientTextClass} text-xs font-black uppercase tracking-[0.45em]`}>JBMS Gallery</p>
+        <h2 className="mt-4 text-3xl font-black italic tracking-tight text-white sm:text-4xl lg:text-5xl">
+          Highlights from the shop floor, builds, and real service moments.
+        </h2>
+        <p className="mx-auto mt-4 max-w-4xl text-sm font-bold uppercase tracking-[0.14em] text-gray-500 sm:text-base">
+          A rotating showcase of JBMS work, rider visits, and behind-the-scenes snapshots from the garage.
+        </p>
+      </div>
+
+      <div className="rounded-[38px] border border-white/10 bg-[#111111] p-5 shadow-[0_25px_80px_rgba(0,0,0,0.4)] sm:p-8 lg:p-10">
+        <div className="mx-auto max-w-5xl">
+          <div className="relative overflow-hidden rounded-[30px] border border-white/40 bg-black">
+            <img
+              src={galleryImages[activeImageIndex]}
+              alt={`JBMS gallery ${activeImageIndex + 1}`}
+              className="h-[320px] w-full object-cover sm:h-[420px] lg:h-[560px]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between gap-4 p-6 sm:p-8">
+              <div>
+                <p className={`${gradientTextClass} text-xs font-black uppercase tracking-[0.4em]`}>On Display</p>
+                <h3 className="mt-3 text-3xl font-black italic text-white sm:text-4xl">Featured gallery shot.</h3>
+              </div>
+              <div className="hidden rounded-[24px] border border-white/10 bg-black/45 px-4 py-3 text-right backdrop-blur-md md:block">
+                <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gray-400">Auto Scroll</p>
+                <p className="mt-2 text-base font-black text-white">{String(activeImageIndex + 1).padStart(2, '0')} / 06</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 overflow-hidden">
+            <div
+              className="flex gap-4 transition-transform duration-700 ease-out"
+              style={{ transform: `translateX(-${activeImageIndex * (100 / galleryImages.length)}%)` }}
+            >
+              {galleryImages.map((imageSrc, index) => (
+                <button
+                  key={imageSrc}
+                  type="button"
+                  onClick={() => setActiveImageIndex(index)}
+                  className={`min-w-[180px] overflow-hidden rounded-[22px] border transition-all duration-300 sm:min-w-[220px] ${
+                    index === activeImageIndex
+                      ? 'border-orange-400/70 ring-1 ring-orange-400/20 shadow-[0_0_24px_rgba(249,115,22,0.16)]'
+                      : 'border-white/40 opacity-70 hover:opacity-100'
+                  }`}
+                >
+                  <img
+                    src={imageSrc}
+                    alt={`JBMS thumbnail ${index + 1}`}
+                    className="h-[120px] w-full object-cover sm:h-[140px]"
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 flex justify-center gap-2">
+            {galleryImages.map((_, index) => (
+              <span
+                key={index}
+                className={`h-2.5 w-10 rounded-full transition-all ${
+                  index === activeImageIndex ? 'bg-gradient-to-r from-[#ff3636] to-[#f97215]' : 'bg-white/15'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Chatbot({ isChatOpen, setIsChatOpen }) {
   const [messages, setMessages] = useState([
     { role: 'model', text: "Ride safe, Welcome to JBMS MOTOSHOP. AI Mechanic here to help!" }
@@ -536,7 +661,6 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, isChatOpen]);
 
-  // Helper for exponential backoff retries
   const fetchWithRetry = async (url, options, retries = 5, backoff = 1000) => {
     try {
       const response = await fetch(url, options);
@@ -544,7 +668,7 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
       return await response.json();
     } catch (error) {
       if (retries <= 0) throw error;
-      await new Promise(resolve => setTimeout(resolve, backoff));
+      await new Promise((resolve) => setTimeout(resolve, backoff));
       return fetchWithRetry(url, options, retries - 1, backoff * 2);
     }
   };
@@ -554,12 +678,12 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
     if (!input.trim() || isLoading) return;
 
     const userMsg = input.trim();
-    setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
+    setMessages((prev) => [...prev, { role: 'user', text: userMsg }]);
     setInput('');
     setIsLoading(true);
 
     try {
-      const history = messages.map(m => ({ role: m.role, parts: [{ text: m.text }] }));
+      const history = messages.map((m) => ({ role: m.role, parts: [{ text: m.text }] }));
       history.push({ role: 'user', parts: [{ text: userMsg }] });
 
       const data = await fetchWithRetry(
@@ -567,17 +691,17 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            contents: history, 
-            systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] } 
+          body: JSON.stringify({
+            contents: history,
+            systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] }
           })
         }
       );
 
       const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "I am so sorry but can you clarify your inquiry?";
-      setMessages(prev => [...prev, { role: 'model', text: aiResponse }]);
+      setMessages((prev) => [...prev, { role: 'model', text: aiResponse }]);
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'model', text: "I can't connect to the server right now please try again later Thank you." }]);
+      setMessages((prev) => [...prev, { role: 'model', text: "I can't connect to the server right now please try again later Thank you." }]);
     } finally {
       setIsLoading(false);
     }
@@ -586,69 +710,71 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
   return (
     <div className="fixed bottom-6 right-6 z-[9999]">
       {!isChatOpen && (
-        <button 
-          onClick={() => setIsChatOpen(true)} 
-          className={`${gradientSurfaceClass} text-white p-5 rounded-full shadow-[0_20px_50px_rgba(249,115,22,0.4)] hover:scale-110 active:scale-95 transition-all animate-pulse-orange group flex items-center justify-center`}
+        <button
+          onClick={() => setIsChatOpen(true)}
+          className={`${gradientSurfaceClass} group flex items-center justify-center rounded-full p-5 text-white shadow-[0_20px_50px_rgba(249,115,22,0.4)] transition-all hover:scale-110 active:scale-95 animate-pulse-orange`}
         >
-          <MessageCircle size={36} className="group-hover:rotate-12 transition-transform fill-white/10" />
+          <MessageCircle size={36} className="fill-white/10 transition-transform group-hover:rotate-12" />
         </button>
       )}
 
       {isChatOpen && (
-        <div className="w-[336px] max-w-[88vw] h-[520px] max-h-[80vh] bg-[#282828] border-2 border-white/10 rounded-[32px] shadow-[0_30px_100px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden chat-slide-up">
-          <div className="bg-gradient-to-r from-[#ff3636] to-[#f97215] p-5 flex items-center justify-between shadow-2xl">
+        <div className="chat-slide-up flex h-[520px] max-h-[80vh] w-[336px] max-w-[88vw] flex-col overflow-hidden rounded-[32px] border-2 border-white/10 bg-[#111111] shadow-[0_30px_100px_rgba(0,0,0,0.8)]">
+          <div className="flex items-center justify-between bg-gradient-to-r from-[#ff3636] to-[#f97215] p-5 shadow-2xl">
             <div className="flex items-center gap-3">
-              <div className="bg-white/20 p-2 rounded-2xl backdrop-blur-md ring-1 ring-white/30">
+              <div className="rounded-2xl bg-white/20 p-2 backdrop-blur-md ring-1 ring-white/30">
                 <Wrench size={20} className="text-white" />
               </div>
               <div>
-                <h3 className="font-black text-lg text-white italic tracking-tighter leading-none uppercase">AI Mechanic</h3>
-                <p className="text-[10px] font-black text-orange-100 uppercase tracking-widest mt-1 opacity-80">Online • MOTOSHOP PH</p>
+                <h3 className="text-lg font-black uppercase leading-none tracking-tighter text-white italic">AI Mechanic</h3>
+                <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-orange-100 opacity-80">Online • MOTOSHOP PH</p>
               </div>
             </div>
-            <button onClick={() => setIsChatOpen(false)} className="hover:rotate-90 transition-transform bg-black/20 p-2 rounded-full text-white shadow-lg">
+            <button onClick={() => setIsChatOpen(false)} className="rounded-full bg-black/20 p-2 text-white shadow-lg transition-transform hover:rotate-90">
               <X size={20} />
             </button>
           </div>
 
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-5 bg-[#1a1a1a] custom-scrollbar">
+          <div ref={scrollRef} className="custom-scrollbar flex-1 space-y-5 overflow-y-auto bg-black p-5">
             {messages.map((msg, i) => (
               <div key={i} className={`flex items-start gap-2.5 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                <div className={`p-2 rounded-2xl ${msg.role === 'user' ? 'bg-orange-500/20' : 'bg-white/5'}`}>
+                <div className={`rounded-2xl p-2 ${msg.role === 'user' ? 'bg-orange-500/20' : 'bg-white/5'}`}>
                   {msg.role === 'user' ? <User size={16} className="text-orange-400" /> : <Wrench size={16} className="text-gray-400" />}
                 </div>
-                <div className={`max-w-[78%] rounded-[24px] px-5 py-3.5 text-sm font-bold shadow-xl leading-relaxed
-                  ${msg.role === 'user' 
-                    ? 'bg-gradient-to-r from-[#ff3636] to-[#f97215] text-white rounded-tr-none' 
-                    : 'bg-[#333333] text-gray-100 rounded-tl-none border border-white/5'}`}>
+                <div className={`max-w-[78%] rounded-[24px] px-5 py-3.5 text-sm font-bold leading-relaxed shadow-xl ${
+                  msg.role === 'user'
+                    ? 'rounded-tr-none bg-gradient-to-r from-[#ff3636] to-[#f97215] text-white'
+                    : 'rounded-tl-none border border-white/5 bg-[#202020] text-gray-100'
+                }`}>
                   {msg.text}
                 </div>
               </div>
             ))}
+
             {isLoading && (
-              <div className="flex justify-start items-center gap-2.5">
-                <div className="p-2 rounded-2xl bg-white/5"><Wrench size={16} className="text-gray-600 animate-spin" /></div>
-                <div className="bg-[#333333] px-5 py-3.5 rounded-[24px] rounded-tl-none flex gap-1.5">
-                  <div className="w-2 h-2 rounded-full animate-bounce bg-gradient-to-r from-[#ff3636] to-[#f97215]"></div>
-                  <div className="w-2 h-2 rounded-full animate-bounce [animation-delay:0.2s] bg-gradient-to-r from-[#ff3636] to-[#f97215]"></div>
-                  <div className="w-2 h-2 rounded-full animate-bounce [animation-delay:0.4s] bg-gradient-to-r from-[#ff3636] to-[#f97215]"></div>
+              <div className="flex items-center justify-start gap-2.5">
+                <div className="rounded-2xl bg-white/5 p-2"><Wrench size={16} className="animate-spin text-gray-600" /></div>
+                <div className="flex gap-1.5 rounded-[24px] rounded-tl-none bg-[#202020] px-5 py-3.5">
+                  <div className="h-2 w-2 animate-bounce rounded-full bg-gradient-to-r from-[#ff3636] to-[#f97215]"></div>
+                  <div className="h-2 w-2 animate-bounce rounded-full bg-gradient-to-r from-[#ff3636] to-[#f97215] [animation-delay:0.2s]"></div>
+                  <div className="h-2 w-2 animate-bounce rounded-full bg-gradient-to-r from-[#ff3636] to-[#f97215] [animation-delay:0.4s]"></div>
                 </div>
               </div>
             )}
           </div>
 
-          <form onSubmit={handleSend} className="p-5 bg-[#282828] border-t border-white/5">
-            <div className="relative group">
+          <form onSubmit={handleSend} className="border-t border-white/5 bg-[#111111] p-5">
+            <div className="group relative">
               <input
-                type="text" 
-                value={input} 
+                type="text"
+                value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="What's your question?"
-                className="w-full bg-[#333333] border-2 border-white/5 rounded-full py-4 pl-6 pr-14 text-sm font-bold focus:outline-none focus:border-orange-500 transition-all text-white placeholder:text-gray-600"
+                className="w-full rounded-full border-2 border-white/5 bg-[#202020] py-4 pl-6 pr-14 text-sm font-bold text-white transition-all placeholder:text-gray-600 focus:border-orange-500 focus:outline-none"
               />
-              <button 
-                type="submit" 
-                className={`${gradientSurfaceClass} absolute right-2 top-2 p-3 rounded-full text-white transition-all shadow-xl hover:scale-105 active:scale-95 hover:shadow-[0_16px_28px_rgba(249,115,22,0.28)]`}
+              <button
+                type="submit"
+                className={`${gradientSurfaceClass} absolute right-2 top-2 rounded-full p-3 text-white shadow-xl transition-all hover:scale-105 hover:shadow-[0_16px_28px_rgba(249,115,22,0.28)] active:scale-95`}
               >
                 <Send size={18} />
               </button>
