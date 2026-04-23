@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Wrench, BookOpen, HelpCircle, ShoppingBag, User, Calendar, Cpu, Disc3, ClipboardList, ChevronDown, Gauge, CircleDot, Cable, Battery, Bike, Shield } from 'lucide-react';
+import { MessageCircle, X, Send, Wrench, BookOpen, HelpCircle, ShoppingBag, User, Calendar, Cpu, Disc3, ClipboardList, ChevronDown, Gauge, CircleDot, Cable, Battery, Bike, Shield, Menu } from 'lucide-react';
 import jbmsLogo from './jbms.png';
 import carGif from './car1.gif';
 import carTwoGif from './car2.gif';
@@ -76,6 +76,7 @@ export default function App() {
 }
 
 function Navbar({ activeTab, setActiveTab }) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navItems = [
     { id: 'products', label: 'PRODUCTS' },
     { id: 'services', label: 'SERVICES' },
@@ -83,10 +84,15 @@ function Navbar({ activeTab, setActiveTab }) {
     { id: 'about', label: 'ABOUT' },
   ];
 
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <nav className="sticky top-0 z-50 border-b border-white/10 bg-black/95 shadow-2xl backdrop-blur-xl">
       <div className="flex w-full items-center justify-between gap-4 px-3 py-4 sm:px-4 lg:px-6 xl:px-8 2xl:px-10">
-        <div className="group flex cursor-pointer items-center gap-3" onClick={() => setActiveTab('home')}>
+        <div className="group flex min-w-0 cursor-pointer items-center gap-3" onClick={() => handleTabChange('home')}>
           <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-orange-500/70 bg-[#111111] p-2 shadow-[0_8px_22px_rgba(249,115,22,0.22)] ring-1 ring-white/10 transition-transform group-hover:scale-105">
             <img
               src={jbmsLogo}
@@ -94,14 +100,14 @@ function Navbar({ activeTab, setActiveTab }) {
               className="h-full w-full rounded-full object-cover"
             />
           </div>
-          <span className="text-2xl font-black italic tracking-tighter text-white">JBMS MOTOSHOP</span>
+          <span className="truncate text-lg font-black italic tracking-tighter text-white sm:text-2xl">JBMS MOTOSHOP</span>
         </div>
 
         <div className="hidden gap-2 md:flex">
           {navItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => handleTabChange(item.id)}
               className={`rounded-full px-5 py-2.5 text-[12px] font-black tracking-[0.16em] transition-all lg:px-6 ${
                 activeTab === item.id
                   ? `${gradientSurfaceClass} text-white shadow-lg`
@@ -114,11 +120,52 @@ function Navbar({ activeTab, setActiveTab }) {
         </div>
 
         <button
-          onClick={() => setActiveTab('join')}
-          className={`${gradientSurfaceClass} rounded-2xl px-5 py-2.5 text-[12px] font-black uppercase tracking-[0.12em] text-white shadow-[0_14px_30px_rgba(249,115,22,0.24)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(249,115,22,0.28)] lg:px-6`}
+          onClick={() => handleTabChange('join')}
+          className={`${gradientSurfaceClass} hidden rounded-2xl px-5 py-2.5 text-[12px] font-black uppercase tracking-[0.12em] text-white shadow-[0_14px_30px_rgba(249,115,22,0.24)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(249,115,22,0.28)] md:inline-flex lg:px-6`}
         >
           Join Us Now
         </button>
+
+        <div className="relative md:hidden">
+          <button
+            type="button"
+            aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={isMobileMenuOpen}
+            onClick={() => setIsMobileMenuOpen((current) => !current)}
+            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-[#161616] text-white shadow-[0_14px_28px_rgba(0,0,0,0.35)] transition-all hover:border-orange-400/40 hover:bg-[#1d1d1d]"
+          >
+            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+
+          {isMobileMenuOpen && (
+            <div className="absolute right-0 top-[calc(100%+12px)] w-[220px] overflow-hidden rounded-[24px] border border-white/10 bg-[#111111] p-3 shadow-[0_20px_50px_rgba(0,0,0,0.45)]">
+              <div className="space-y-2">
+                {navItems.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => handleTabChange(item.id)}
+                    className={`w-full rounded-2xl px-4 py-3 text-left text-[12px] font-black tracking-[0.16em] transition-all ${
+                      activeTab === item.id
+                        ? `${gradientSurfaceClass} text-white shadow-lg`
+                        : 'border border-white/10 bg-[#1a1a1a] text-gray-300 hover:bg-[#242424]'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => handleTabChange('join')}
+                  className={`${gradientSurfaceClass} w-full rounded-2xl px-4 py-3 text-left text-[12px] font-black uppercase tracking-[0.12em] text-white shadow-[0_14px_30px_rgba(249,115,22,0.24)]`}
+                >
+                  Join Us Now
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   );
