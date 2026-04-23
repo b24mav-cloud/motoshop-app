@@ -78,6 +78,7 @@ export default function App() {
 function Navbar({ activeTab, setActiveTab }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navItems = [
+    { id: 'home', label: 'DASHBOARD' },
     { id: 'products', label: 'PRODUCTS' },
     { id: 'services', label: 'SERVICES' },
     { id: 'help', label: 'GALLERY' },
@@ -103,17 +104,22 @@ function Navbar({ activeTab, setActiveTab }) {
           <span className="truncate text-lg font-black italic tracking-tighter text-white sm:text-2xl">JBMS MOTOSHOP</span>
         </div>
 
-        <div className="hidden gap-2 md:flex">
+        <div className="hidden items-center gap-2 md:flex">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => handleTabChange(item.id)}
-              className={`rounded-full px-5 py-2.5 text-[12px] font-black tracking-[0.16em] transition-all lg:px-6 ${
+              className={`group relative overflow-hidden border px-5 py-3 text-[11px] font-black tracking-[0.18em] transition-all duration-300 lg:px-6 ${
                 activeTab === item.id
-                  ? `${gradientSurfaceClass} text-white shadow-lg`
-                  : 'border border-white/10 bg-[#1a1a1a] text-gray-400 hover:bg-[#242424]'
+                  ? 'border-red-500/70 bg-[#141414] text-white shadow-[0_0_0_1px_rgba(255,59,59,0.18)]'
+                  : 'border-transparent bg-transparent text-white hover:border-white/15 hover:bg-[#121212]'
               }`}
             >
+              <span
+                className={`absolute inset-x-0 bottom-0 h-[2px] origin-left bg-[#ff3b3b] transition-transform duration-300 ${
+                  activeTab === item.id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                }`}
+              />
               {item.label}
             </button>
           ))}
@@ -145,12 +151,17 @@ function Navbar({ activeTab, setActiveTab }) {
                     key={item.id}
                     type="button"
                     onClick={() => handleTabChange(item.id)}
-                    className={`w-full rounded-2xl px-4 py-3 text-left text-[12px] font-black tracking-[0.16em] transition-all ${
+                    className={`group relative w-full overflow-hidden border px-4 py-3 text-left text-[11px] font-black tracking-[0.18em] transition-all duration-300 ${
                       activeTab === item.id
-                        ? `${gradientSurfaceClass} text-white shadow-lg`
-                        : 'border border-white/10 bg-[#1a1a1a] text-gray-300 hover:bg-[#242424]'
+                        ? 'border-red-500/70 bg-[#141414] text-white shadow-[0_0_0_1px_rgba(255,59,59,0.18)]'
+                        : 'border-white/10 bg-[#111111] text-gray-300 hover:border-white/20 hover:bg-[#171717]'
                     }`}
                   >
+                    <span
+                      className={`absolute inset-x-0 bottom-0 h-[2px] origin-left bg-[#ff3b3b] transition-transform duration-300 ${
+                        activeTab === item.id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                      }`}
+                    />
                     {item.label}
                   </button>
                 ))}
