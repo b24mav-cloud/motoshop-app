@@ -33,7 +33,7 @@ const gradientSurfaceClass = "overflow-hidden border border-white/10 bg-gradient
 const gradientTextClass = "bg-gradient-to-r from-[#ff3636] to-[#f97215] bg-clip-text text-transparent";
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('landing');
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   return (
@@ -62,7 +62,8 @@ export default function App() {
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <main className="w-full px-3 pt-6 sm:px-4 lg:px-6 xl:px-8 2xl:px-10">
-        {activeTab === 'dashboard' && <HomeView setActiveTab={setActiveTab} />}
+        {activeTab === 'dashboard' && <PlaceholderView title="Dashboard" icon={<BookOpen size={48} className={`${gradientTextClass} mb-4`} />} />}
+        {activeTab === 'landing' && <HomeView setActiveTab={setActiveTab} />}
         {activeTab === 'products' && <ProductsView />}
         {activeTab === 'services' && <ServicesView />}
         {activeTab === 'about' && <PlaceholderView title="About" icon={<BookOpen size={48} className={`${gradientTextClass} mb-4`} />} />}
@@ -79,6 +80,7 @@ function Navbar({ activeTab, setActiveTab }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navItems = [
     { id: 'dashboard', label: 'DASHBOARD' },
+    { id: 'landing', label: 'LANDING' },
     { id: 'products', label: 'PRODUCTS' },
     { id: 'services', label: 'SERVICES' },
     { id: 'help', label: 'GALLERY' },
@@ -93,7 +95,7 @@ function Navbar({ activeTab, setActiveTab }) {
   return (
     <nav className="sticky top-0 z-50 border-b border-white/10 bg-black/95 shadow-2xl backdrop-blur-xl">
       <div className="flex w-full items-center justify-between gap-4 px-3 py-4 sm:px-4 lg:px-6 xl:px-8 2xl:px-10">
-        <div className="group flex min-w-0 cursor-pointer items-center gap-3" onClick={() => handleTabChange('dashboard')}>
+        <div className="group flex min-w-0 cursor-pointer items-center gap-3" onClick={() => handleTabChange('landing')}>
           <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-orange-500/70 bg-[#111111] p-2 shadow-[0_8px_22px_rgba(249,115,22,0.22)] ring-1 ring-white/10 transition-transform group-hover:scale-105">
             <img
               src={jbmsLogo}
