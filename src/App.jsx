@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Wrench, BookOpen, HelpCircle, ShoppingBag, User, Calendar, Cpu, Disc3, ClipboardList, ChevronDown, Gauge, CircleDot, Cable, Battery, Bike, Shield, Menu } from 'lucide-react';
+import { MessageCircle, X, Send, Wrench, BookOpen, HelpCircle, ShoppingBag, User, Calendar, Cpu, Disc3, ClipboardList, ChevronDown, Gauge, CircleDot, Cable, Battery, Bike, Shield, Menu, House } from 'lucide-react';
 import jbmsLogo from './jbms.png';
 import carGif from './car1.gif';
 import carTwoGif from './car2.gif';
@@ -35,6 +35,22 @@ const gradientTextClass = "bg-gradient-to-r from-[#ff3636] to-[#f97215] bg-clip-
 export default function App() {
   const [activeTab, setActiveTab] = useState('landing');
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [showHomeBubble, setShowHomeBubble] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowHomeBubble(window.scrollY > 220);
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-black pb-24 font-sans text-white selection:bg-orange-500">
@@ -71,6 +87,10 @@ export default function App() {
         {activeTab === 'join' && <JoinView />}
       </main>
 
+      <FloatingHomeButton
+        isVisible={showHomeBubble && !isChatOpen}
+        onClick={scrollToTop}
+      />
       <Chatbot isChatOpen={isChatOpen} setIsChatOpen={setIsChatOpen} />
     </div>
   );
@@ -80,7 +100,6 @@ function Navbar({ activeTab, setActiveTab }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navItems = [
     { id: 'dashboard', label: 'DASHBOARD' },
-    { id: 'landing', label: 'LANDING' },
     { id: 'products', label: 'PRODUCTS' },
     { id: 'services', label: 'SERVICES' },
     { id: 'help', label: 'GALLERY' },
@@ -181,6 +200,24 @@ function Navbar({ activeTab, setActiveTab }) {
         </div>
       </div>
     </nav>
+  );
+}
+
+function FloatingHomeButton({ isVisible, onClick }) {
+  if (!isVisible) return null;
+
+  return (
+    <div className="fixed bottom-6 right-28 z-[9998]">
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label="Scroll to top"
+        className="group flex h-16 w-16 items-center justify-center rounded-full border border-red-500/45 bg-[#111111]/95 text-white shadow-[0_18px_45px_rgba(0,0,0,0.45)] backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-red-500/70 hover:bg-[#171717]"
+      >
+        <span className="absolute inset-x-3 bottom-0 h-[2px] origin-center scale-x-0 bg-[#ff3b3b] transition-transform duration-300 group-hover:scale-x-100" />
+        <House size={28} className="transition-transform duration-300 group-hover:scale-110" />
+      </button>
+    </div>
   );
 }
 
