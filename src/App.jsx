@@ -89,7 +89,8 @@ export default function App() {
       </main>
 
       <FloatingHomeButton
-        isVisible={showHomeBubble && !isChatOpen}
+        isVisible={showHomeBubble}
+        isChatOpen={isChatOpen}
         onClick={scrollToTop}
       />
       <Chatbot isChatOpen={isChatOpen} setIsChatOpen={setIsChatOpen} />
@@ -204,11 +205,14 @@ function Navbar({ activeTab, setActiveTab }) {
   );
 }
 
-function FloatingHomeButton({ isVisible, onClick }) {
+function FloatingHomeButton({ isVisible, isChatOpen, onClick }) {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-6 right-28 z-[9998]">
+    <div
+      className="fixed right-6 z-[9998] transition-all duration-300"
+      style={{ bottom: isChatOpen ? 'calc(min(80vh, 520px) + 2.5rem)' : '6.5rem' }}
+    >
       <button
         type="button"
         onClick={onClick}
@@ -839,9 +843,11 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
       {!isChatOpen && (
         <button
           onClick={() => setIsChatOpen(true)}
-          className={`${gradientSurfaceClass} group flex items-center justify-center rounded-full p-5 text-white shadow-[0_20px_50px_rgba(255,59,59,0.38)] transition-all hover:scale-110 active:scale-95 animate-pulse-red`}
+          aria-label="Open AI mechanic chat"
+          className="animate-pulse-red group relative flex h-16 w-16 items-center justify-center rounded-full border border-red-500/50 bg-[#ff3b3b] text-white shadow-[0_20px_50px_rgba(255,59,59,0.38)] transition-all hover:scale-110 active:scale-95"
         >
-          <MessageCircle size={36} className="fill-white/10 transition-transform group-hover:rotate-12" />
+          <span className="absolute inset-[7px] rounded-full bg-[#2f2f2f] transition-colors duration-300 group-hover:bg-[#383838]" />
+          <MessageCircle size={30} className="relative z-10 fill-white/10 transition-transform group-hover:rotate-12" />
         </button>
       )}
 
