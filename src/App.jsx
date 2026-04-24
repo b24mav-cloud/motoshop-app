@@ -30,8 +30,8 @@ Your duties:
 
 Keep responses concise and use bullet points for readability.`;
 
-const gradientSurfaceClass = "overflow-hidden border border-white/10 bg-gradient-to-r from-[#ff3636] to-[#f97215] bg-clip-padding";
-const gradientTextClass = "bg-gradient-to-r from-[#ff3636] to-[#f97215] bg-clip-text text-transparent";
+const gradientSurfaceClass = "overflow-hidden border border-[#ff5c5c] bg-[#ff3b3b] bg-clip-padding";
+const gradientTextClass = "text-[#ff4d4d]";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('landing');
@@ -54,15 +54,15 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-black pb-24 font-sans text-white selection:bg-orange-500">
+    <div className="min-h-screen overflow-x-hidden bg-black pb-24 font-sans text-white selection:bg-[#ff3b3b]">
       <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes pulse-orange {
-          0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7); }
-          70% { box-shadow: 0 0 0 20px rgba(249, 115, 22, 0); }
-          100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+        @keyframes pulse-red {
+          0% { box-shadow: 0 0 0 0 rgba(255, 59, 59, 0.55); }
+          70% { box-shadow: 0 0 0 20px rgba(255, 59, 59, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(255, 59, 59, 0); }
         }
-        .animate-pulse-orange {
-          animation: pulse-orange 2s infinite;
+        .animate-pulse-red {
+          animation: pulse-red 2s infinite;
         }
         .chat-slide-up {
           animation: chatPop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -116,7 +116,7 @@ function Navbar({ activeTab, setActiveTab }) {
     <nav className="sticky top-0 z-50 border-b border-white/10 bg-black/95 shadow-2xl backdrop-blur-xl">
       <div className="flex w-full items-center justify-between gap-4 px-3 py-4 sm:px-4 lg:px-6 xl:px-8 2xl:px-10">
         <div className="group flex min-w-0 cursor-pointer items-center gap-3" onClick={() => handleTabChange('landing')}>
-          <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-orange-500/70 bg-[#111111] p-2 shadow-[0_8px_22px_rgba(249,115,22,0.22)] ring-1 ring-white/10 transition-transform group-hover:scale-105">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-red-500/70 bg-[#111111] p-2 shadow-[0_8px_22px_rgba(255,59,59,0.24)] ring-1 ring-white/10 transition-transform group-hover:scale-105">
             <img
               src={jbmsLogo}
               alt="JBMS MOTOSHOP logo"
@@ -149,7 +149,7 @@ function Navbar({ activeTab, setActiveTab }) {
 
         <button
           onClick={() => handleTabChange('join')}
-          className={`${gradientSurfaceClass} hidden rounded-2xl px-5 py-2.5 text-[12px] font-black uppercase tracking-[0.12em] text-white shadow-[0_14px_30px_rgba(249,115,22,0.24)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(249,115,22,0.28)] md:inline-flex lg:px-6`}
+          className={`${gradientSurfaceClass} hidden px-5 py-2.5 text-[12px] font-black uppercase tracking-[0.12em] text-white shadow-[0_14px_30px_rgba(255,59,59,0.24)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(255,59,59,0.3)] md:inline-flex lg:px-6`}
         >
           Join Us Now
         </button>
@@ -160,7 +160,7 @@ function Navbar({ activeTab, setActiveTab }) {
             aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={isMobileMenuOpen}
             onClick={() => setIsMobileMenuOpen((current) => !current)}
-            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-[#161616] text-white shadow-[0_14px_28px_rgba(0,0,0,0.35)] transition-all hover:border-orange-400/40 hover:bg-[#1d1d1d]"
+            className="flex h-12 w-12 items-center justify-center border border-white/10 bg-[#161616] text-white shadow-[0_14px_28px_rgba(0,0,0,0.35)] transition-all hover:border-red-500/40 hover:bg-[#1d1d1d]"
           >
             {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -191,7 +191,7 @@ function Navbar({ activeTab, setActiveTab }) {
                 <button
                   type="button"
                   onClick={() => handleTabChange('join')}
-                  className={`${gradientSurfaceClass} w-full rounded-2xl px-4 py-3 text-left text-[12px] font-black uppercase tracking-[0.12em] text-white shadow-[0_14px_30px_rgba(249,115,22,0.24)]`}
+                  className={`${gradientSurfaceClass} w-full px-4 py-3 text-left text-[12px] font-black uppercase tracking-[0.12em] text-white shadow-[0_14px_30px_rgba(255,59,59,0.24)]`}
                 >
                   Join Us Now
                 </button>
@@ -213,7 +213,7 @@ function FloatingHomeButton({ isVisible, onClick }) {
         type="button"
         onClick={onClick}
         aria-label="Scroll to top"
-        className="group flex h-16 w-16 items-center justify-center rounded-full border border-red-500/45 bg-[#111111]/95 text-white shadow-[0_18px_45px_rgba(0,0,0,0.45)] backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-red-500/70 hover:bg-[#171717]"
+        className="group flex h-16 w-16 items-center justify-center border border-red-500/45 bg-[#111111]/95 text-white shadow-[0_18px_45px_rgba(0,0,0,0.45)] backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-red-500/70 hover:bg-[#171717]"
       >
         <span className="absolute inset-x-3 bottom-0 h-[2px] origin-center scale-x-0 bg-[#ff3b3b] transition-transform duration-300 group-hover:scale-x-100" />
         <House size={28} className="transition-transform duration-300 group-hover:scale-110" />
@@ -228,7 +228,7 @@ function HomeView({ setActiveTab }) {
       <section className="grid items-center gap-10 border-y border-white/10 bg-[#101010] px-5 py-10 shadow-[0_30px_90px_rgba(0,0,0,0.45)] lg:grid-cols-[1fr_1.45fr] lg:px-8 xl:px-10 2xl:px-12">
         <div className="text-center lg:text-left">
           <div className="mb-5 flex flex-col items-center justify-center gap-5 sm:flex-row sm:gap-6 lg:justify-start">
-            <div className="flex h-28 w-28 items-center justify-center rounded-full border-[3px] border-orange-500/80 bg-[#1a1a1a] p-3 shadow-[0_18px_45px_rgba(249,115,22,0.2)] ring-1 ring-white/10 sm:h-32 sm:w-32">
+            <div className="flex h-28 w-28 items-center justify-center rounded-full border-[3px] border-red-500/80 bg-[#1a1a1a] p-3 shadow-[0_18px_45px_rgba(255,59,59,0.2)] ring-1 ring-white/10 sm:h-32 sm:w-32">
               <img
                 src={jbmsLogo}
                 alt="JBMS MOTOSHOP logo"
@@ -247,13 +247,13 @@ function HomeView({ setActiveTab }) {
           <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row lg:justify-start">
             <button
               onClick={() => setActiveTab('join')}
-              className={`${gradientSurfaceClass} rounded-full px-10 py-4 text-lg font-black italic tracking-tight text-white shadow-[0_24px_50px_rgba(249,115,22,0.32)] transition-all hover:scale-105 hover:shadow-[0_28px_60px_rgba(249,115,22,0.36)]`}
+              className={`${gradientSurfaceClass} px-10 py-4 text-lg font-black italic tracking-tight text-white shadow-[0_24px_50px_rgba(255,59,59,0.3)] transition-all hover:scale-105 hover:shadow-[0_28px_60px_rgba(255,59,59,0.35)]`}
             >
               GET STARTED
             </button>
             <button
               onClick={() => setActiveTab('products')}
-              className="rounded-full border border-white/10 bg-[#1a1a1a] px-10 py-4 text-sm font-black uppercase tracking-[0.18em] text-gray-200 transition-all hover:border-orange-400/40 hover:bg-[#202020]"
+              className="border border-red-500/35 bg-[#1a1a1a] px-10 py-4 text-sm font-black uppercase tracking-[0.18em] text-[#ff4d4d] transition-all hover:border-red-500/60 hover:bg-[#202020]"
             >
               Explore Products
             </button>
@@ -328,7 +328,7 @@ function JoinView() {
           </div>
 
           <div className="mt-10 flex justify-center">
-            <div className="w-full max-w-[620px] rounded-[34px] border border-orange-400/30 bg-[#1a1a1a] p-4 shadow-[0_20px_45px_rgba(249,115,22,0.12)]">
+            <div className="w-full max-w-[620px] rounded-[34px] border border-red-500/30 bg-[#1a1a1a] p-4 shadow-[0_20px_45px_rgba(255,59,59,0.12)]">
               <div className="overflow-hidden rounded-[26px] border border-white/10">
                 <div
                   className="flex h-[220px] transition-transform duration-700 ease-out sm:h-[250px]"
@@ -349,7 +349,7 @@ function JoinView() {
                   <span
                     key={index}
                     className={`h-2.5 w-2.5 rounded-full transition-all ${
-                      index === activeBannerIndex ? 'bg-gradient-to-r from-[#ff3636] to-[#f97215]' : 'bg-white/20'
+                      index === activeBannerIndex ? 'bg-[#ff3b3b]' : 'bg-white/20'
                     }`}
                   />
                 ))}
@@ -361,11 +361,11 @@ function JoinView() {
             <input
               type="email"
               placeholder="Enter your email address"
-              className="w-full rounded-3xl border border-white/10 bg-[#1a1a1a] px-6 py-5 text-base font-bold text-white outline-none transition-all placeholder:text-gray-500 focus:border-orange-500"
+              className="w-full border border-white/10 bg-[#1a1a1a] px-6 py-5 text-base font-bold text-white outline-none transition-all placeholder:text-gray-500 focus:border-red-500"
             />
             <button
               type="button"
-              className={`${gradientSurfaceClass} w-full rounded-3xl px-6 py-5 text-sm font-black uppercase tracking-[0.3em] text-white shadow-[0_18px_35px_rgba(249,115,22,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_40px_rgba(249,115,22,0.34)]`}
+              className={`${gradientSurfaceClass} w-full px-6 py-5 text-sm font-black uppercase tracking-[0.3em] text-white shadow-[0_18px_35px_rgba(255,59,59,0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_40px_rgba(255,59,59,0.34)]`}
             >
               Submit
             </button>
@@ -449,7 +449,7 @@ function ProductsView() {
             <div
               key={section.id}
               className={`group relative self-start overflow-hidden rounded-[32px] border border-white/12 bg-[#111111] shadow-[0_20px_60px_rgba(0,0,0,0.35)] transition-all duration-300 ${
-                isOpen ? 'bg-[#181818] ring-1 ring-orange-400/20' : 'hover:border-white/20 hover:bg-[#161616]'
+                isOpen ? 'bg-[#181818] ring-1 ring-red-500/20' : 'hover:border-white/20 hover:bg-[#161616]'
               }`}
             >
               <div
@@ -457,8 +457,8 @@ function ProductsView() {
                   isOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                 }`}
               >
-                <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-orange-400/70 to-transparent" />
-                <div className="absolute inset-6 rounded-[28px] bg-gradient-to-br from-[#ff3636]/10 via-[#f97215]/8 to-transparent blur-2xl" />
+                <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-red-500/70 to-transparent" />
+                <div className="absolute inset-6 rounded-[28px] bg-gradient-to-br from-[#ff3b3b]/14 via-[#ff3b3b]/8 to-transparent blur-2xl" />
               </div>
 
               <button
@@ -471,13 +471,13 @@ function ProductsView() {
                 </div>
                 <div className={`min-w-0 flex-1 transition-all duration-300 ${isOpen ? 'scale-[1.01]' : 'group-hover:scale-[1.01]'}`}>
                   <div
-                    className={`inline-flex rounded-2xl border p-3 transition-all duration-300 ${
+                    className={`inline-flex border p-3 transition-all duration-300 ${
                       isOpen
-                        ? 'border-orange-400/50 bg-white/5 shadow-[0_0_30px_rgba(249,115,22,0.18)]'
-                        : 'border-white/10 bg-white/[0.02] group-hover:border-orange-400/40 group-hover:shadow-[0_0_28px_rgba(249,115,22,0.14)]'
+                        ? 'border-red-500/50 bg-white/5 shadow-[0_0_30px_rgba(255,59,59,0.18)]'
+                        : 'border-white/10 bg-white/[0.02] group-hover:border-red-500/40 group-hover:shadow-[0_0_28px_rgba(255,59,59,0.14)]'
                     }`}
                   >
-                    <Icon size={26} className={isOpen ? 'text-orange-300' : 'text-gray-400 transition-colors duration-300 group-hover:text-orange-300'} />
+                    <Icon size={26} className={isOpen ? 'text-[#ff4d4d]' : 'text-gray-400 transition-colors duration-300 group-hover:text-[#ff4d4d]'} />
                   </div>
                   <h3 className="mt-8 text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
                     {section.title}
@@ -495,8 +495,8 @@ function ProductsView() {
                 </div>
 
                 <div
-                  className={`mt-1 rounded-full border border-white/10 bg-white/[0.03] p-2 transition-all duration-300 ${
-                    isOpen ? 'rotate-180 border-orange-400/40 text-orange-300' : 'text-gray-400 group-hover:text-orange-300'
+                  className={`mt-1 border border-white/10 bg-white/[0.03] p-2 transition-all duration-300 ${
+                    isOpen ? 'rotate-180 border-red-500/40 text-[#ff4d4d]' : 'text-gray-400 group-hover:text-[#ff4d4d]'
                   }`}
                 >
                   <ChevronDown size={18} />
@@ -514,7 +514,7 @@ function ProductsView() {
                       {section.items.map((item) => (
                         <div
                           key={item}
-                          className="rounded-2xl border border-white/10 bg-[#202020] px-4 py-4 text-sm font-bold text-gray-200 shadow-[0_8px_22px_rgba(0,0,0,0.18)] transition-all duration-300 hover:border-orange-400/30 hover:bg-[#262626]"
+                          className="rounded-sm border border-white/10 bg-[#202020] px-4 py-4 text-sm font-bold text-gray-200 shadow-[0_8px_22px_rgba(0,0,0,0.18)] transition-all duration-300 hover:border-red-500/30 hover:bg-[#262626]"
                         >
                           {item}
                         </div>
@@ -613,8 +613,8 @@ function ServicesView() {
                     : 'opacity-0 group-hover:opacity-100'
                 }`}
               >
-                <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-orange-400/70 to-transparent" />
-                <div className="absolute inset-6 rounded-[28px] bg-gradient-to-br from-[#ff3636]/10 via-[#f97215]/8 to-transparent blur-2xl" />
+                <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-red-500/70 to-transparent" />
+                <div className="absolute inset-6 rounded-[28px] bg-gradient-to-br from-[#ff3b3b]/14 via-[#ff3b3b]/8 to-transparent blur-2xl" />
               </div>
 
               <div
@@ -624,15 +624,15 @@ function ServicesView() {
               >
                 <p className="text-[11px] font-black tracking-[0.35em] text-sky-200/70">{service.number}</p>
                 <div
-                  className={`mt-8 inline-flex rounded-2xl border p-3 transition-all duration-300 ${
+                  className={`mt-8 inline-flex border p-3 transition-all duration-300 ${
                     isSelected
-                      ? 'border-orange-400/50 bg-white/5 shadow-[0_0_30px_rgba(249,115,22,0.18)]'
-                      : 'border-white/10 bg-white/[0.02] group-hover:border-orange-400/40 group-hover:shadow-[0_0_28px_rgba(249,115,22,0.14)]'
+                      ? 'border-red-500/50 bg-white/5 shadow-[0_0_30px_rgba(255,59,59,0.18)]'
+                      : 'border-white/10 bg-white/[0.02] group-hover:border-red-500/40 group-hover:shadow-[0_0_28px_rgba(255,59,59,0.14)]'
                   }`}
                 >
                   <Icon
                     size={32}
-                    className={isSelected ? 'text-orange-300' : 'text-gray-400 transition-colors duration-300 group-hover:text-orange-300'}
+                    className={isSelected ? 'text-[#ff4d4d]' : 'text-gray-400 transition-colors duration-300 group-hover:text-[#ff4d4d]'}
                   />
                 </div>
                 <h3 className="mt-7 text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
@@ -746,7 +746,7 @@ function GalleryView() {
                   }}
                   className={`min-w-[180px] overflow-hidden rounded-[22px] border transition-all duration-300 sm:min-w-[220px] ${
                     index === activeImageIndex
-                      ? 'border-orange-400/70 ring-1 ring-orange-400/20 shadow-[0_0_24px_rgba(249,115,22,0.16)]'
+                      ? 'border-red-500/70 ring-1 ring-red-500/20 shadow-[0_0_24px_rgba(255,59,59,0.18)]'
                       : 'border-white/40 opacity-70 hover:opacity-100'
                   }`}
                 >
@@ -765,7 +765,7 @@ function GalleryView() {
               <span
                 key={index}
                 className={`h-2.5 w-10 rounded-full transition-all ${
-                  index === activeImageIndex ? 'bg-gradient-to-r from-[#ff3636] to-[#f97215]' : 'bg-white/15'
+                  index === activeImageIndex ? 'bg-[#ff3b3b]' : 'bg-white/15'
                 }`}
               />
             ))}
@@ -839,7 +839,7 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
       {!isChatOpen && (
         <button
           onClick={() => setIsChatOpen(true)}
-          className={`${gradientSurfaceClass} group flex items-center justify-center rounded-full p-5 text-white shadow-[0_20px_50px_rgba(249,115,22,0.4)] transition-all hover:scale-110 active:scale-95 animate-pulse-orange`}
+          className={`${gradientSurfaceClass} group flex items-center justify-center rounded-full p-5 text-white shadow-[0_20px_50px_rgba(255,59,59,0.38)] transition-all hover:scale-110 active:scale-95 animate-pulse-red`}
         >
           <MessageCircle size={36} className="fill-white/10 transition-transform group-hover:rotate-12" />
         </button>
@@ -847,14 +847,14 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
 
       {isChatOpen && (
         <div className="chat-slide-up flex h-[520px] max-h-[80vh] w-[336px] max-w-[88vw] flex-col overflow-hidden rounded-[32px] border-2 border-white/10 bg-[#111111] shadow-[0_30px_100px_rgba(0,0,0,0.8)]">
-          <div className="flex items-center justify-between bg-gradient-to-r from-[#ff3636] to-[#f97215] p-5 shadow-2xl">
+          <div className="flex items-center justify-between bg-[#ff3b3b] p-5 shadow-2xl">
             <div className="flex items-center gap-3">
               <div className="rounded-2xl bg-white/20 p-2 backdrop-blur-md ring-1 ring-white/30">
                 <Wrench size={20} className="text-white" />
               </div>
               <div>
                 <h3 className="text-lg font-black uppercase leading-none tracking-tighter text-white italic">AI Mechanic</h3>
-                <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-orange-100 opacity-80">Online • MOTOSHOP PH</p>
+                <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-red-100 opacity-80">Online • MOTOSHOP PH</p>
               </div>
             </div>
             <button onClick={() => setIsChatOpen(false)} className="rounded-full bg-black/20 p-2 text-white shadow-lg transition-transform hover:rotate-90">
@@ -865,12 +865,12 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
           <div ref={scrollRef} className="custom-scrollbar flex-1 space-y-5 overflow-y-auto bg-black p-5">
             {messages.map((msg, i) => (
               <div key={i} className={`flex items-start gap-2.5 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                <div className={`rounded-2xl p-2 ${msg.role === 'user' ? 'bg-orange-500/20' : 'bg-white/5'}`}>
-                  {msg.role === 'user' ? <User size={16} className="text-orange-400" /> : <Wrench size={16} className="text-gray-400" />}
+                <div className={`rounded-2xl p-2 ${msg.role === 'user' ? 'bg-red-500/20' : 'bg-white/5'}`}>
+                  {msg.role === 'user' ? <User size={16} className="text-[#ff4d4d]" /> : <Wrench size={16} className="text-gray-400" />}
                 </div>
                 <div className={`max-w-[78%] rounded-[24px] px-5 py-3.5 text-sm font-bold leading-relaxed shadow-xl ${
                   msg.role === 'user'
-                    ? 'rounded-tr-none bg-gradient-to-r from-[#ff3636] to-[#f97215] text-white'
+                    ? 'rounded-tr-none bg-[#ff3b3b] text-white'
                     : 'rounded-tl-none border border-white/5 bg-[#202020] text-gray-100'
                 }`}>
                   {msg.text}
@@ -882,9 +882,9 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
               <div className="flex items-center justify-start gap-2.5">
                 <div className="rounded-2xl bg-white/5 p-2"><Wrench size={16} className="animate-spin text-gray-600" /></div>
                 <div className="flex gap-1.5 rounded-[24px] rounded-tl-none bg-[#202020] px-5 py-3.5">
-                  <div className="h-2 w-2 animate-bounce rounded-full bg-gradient-to-r from-[#ff3636] to-[#f97215]"></div>
-                  <div className="h-2 w-2 animate-bounce rounded-full bg-gradient-to-r from-[#ff3636] to-[#f97215] [animation-delay:0.2s]"></div>
-                  <div className="h-2 w-2 animate-bounce rounded-full bg-gradient-to-r from-[#ff3636] to-[#f97215] [animation-delay:0.4s]"></div>
+                  <div className="h-2 w-2 animate-bounce rounded-full bg-[#ff3b3b]"></div>
+                  <div className="h-2 w-2 animate-bounce rounded-full bg-[#ff3b3b] [animation-delay:0.2s]"></div>
+                  <div className="h-2 w-2 animate-bounce rounded-full bg-[#ff3b3b] [animation-delay:0.4s]"></div>
                 </div>
               </div>
             )}
@@ -897,11 +897,11 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="What's your question?"
-                className="w-full rounded-full border-2 border-white/5 bg-[#202020] py-4 pl-6 pr-14 text-sm font-bold text-white transition-all placeholder:text-gray-600 focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-full border-2 border-white/5 bg-[#202020] py-4 pl-6 pr-14 text-sm font-bold text-white transition-all placeholder:text-gray-600 focus:border-red-500 focus:outline-none"
               />
               <button
                 type="submit"
-                className={`${gradientSurfaceClass} absolute right-2 top-2 rounded-full p-3 text-white shadow-xl transition-all hover:scale-105 hover:shadow-[0_16px_28px_rgba(249,115,22,0.28)] active:scale-95`}
+                className={`${gradientSurfaceClass} absolute right-2 top-2 rounded-full p-3 text-white shadow-xl transition-all hover:scale-105 hover:shadow-[0_16px_28px_rgba(255,59,59,0.28)] active:scale-95`}
               >
                 <Send size={18} />
               </button>
