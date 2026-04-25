@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Wrench, BookOpen, HelpCircle, ShoppingBag, User, Calendar, Cpu, Disc3, ClipboardList, ChevronDown, Gauge, CircleDot, Cable, Battery, Bike, Shield, Menu, House } from 'lucide-react';
+import { MessageCircle, X, Send, Wrench, BookOpen, ShoppingBag, User, Calendar, Cpu, Disc3, ClipboardList, ChevronDown, Gauge, CircleDot, Cable, Battery, Bike, Shield, Menu, House } from 'lucide-react';
 import jbmsLogo from './jbms.png';
 import carGif from './car1.gif';
 import carTwoGif from './car2.gif';
@@ -12,23 +12,6 @@ import gal6 from './gal6.png';
 import gal7 from './gal7.png';
 import motGif from './mot.gif';
 import motTwoGif from './mot2.gif';
-
-/**
- * --- MOTOSHOP AI MECHANIC CONFIGURATION ---
- * The environment provides the API key at runtime.
- */
-const apiKey = "";
-
-const SYSTEM_PROMPT = `You are the MOTOSHOP AI Mechanic, a specialist in motorcycles and cars in the Philippines. 
-Your tone is helpful, expert, and friendly (using common Pinoy rider terms like "Paps" or "Ride Safe").
-
-Your duties:
-1. DIAGNOSE: Ask follow-up questions about sounds, smells, or vibrations to help identify issues.
-2. RECOMMEND PARTS: Suggest specific high-quality parts available at MOTOSHOP (e.g., Akrapovic, Brembo, Michelin, specialized oils).
-3. SAFETY FIRST: If an issue sounds dangerous (like brake failure), tell them to stop riding immediately.
-4. LOCAL CONTEXT: Mention local brands or maintenance tips suitable for Philippine weather (heavy rain, extreme heat).
-
-Keep responses concise and use bullet points for readability.`;
 
 const gradientSurfaceClass = "overflow-hidden border border-[#ff5c5c] bg-[#ff3b3b] bg-clip-padding";
 const gradientTextClass = "text-[#ff4d4d]";
@@ -727,7 +710,7 @@ function GalleryView() {
             </div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between gap-4 p-6 sm:p-8">
-              <div>
+                <div>
                 <p className={`${gradientTextClass} text-xs font-black uppercase tracking-[0.4em]`}>On Display</p>
                 <h3 className="mt-3 text-3xl font-black italic text-white sm:text-4xl">Featured gallery shot.</h3>
               </div>
@@ -782,9 +765,13 @@ function GalleryView() {
 
 function Chatbot({ isChatOpen, setIsChatOpen }) {
   const [messages, setMessages] = useState([
-    { role: 'model', text: "Ride safe, Welcome to JBMS MOTOSHOP. AI Mechanic here to help!" }
+    {
+      role: 'assistant',
+      text: 'Welcome to JBMS MOTOSHOP. I can help with services, booking, and inventory.',
+    }
   ]);
   const [input, setInput] = useState('');
+  const [language, setLanguage] = useState('english');
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef(null);
 
@@ -792,48 +779,46 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, isChatOpen]);
 
-  const fetchWithRetry = async (url, options, retries = 5, backoff = 1000) => {
-    try {
-      const response = await fetch(url, options);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      return await response.json();
-    } catch (error) {
-      if (retries <= 0) throw error;
-      await new Promise((resolve) => setTimeout(resolve, backoff));
-      return fetchWithRetry(url, options, retries - 1, backoff * 2);
-    }
-  };
-
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
     const userMsg = input.trim();
-    setMessages((prev) => [...prev, { role: 'user', text: userMsg }]);
+    const nextMessages = [...messages, { role: 'user', text: userMsg }];
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 6500);
+
+    setMessages(nextMessages);
     setInput('');
     setIsLoading(true);
 
     try {
-      const history = messages.map((m) => ({ role: m.role, parts: [{ text: m.text }] }));
-      history.push({ role: 'user', parts: [{ text: userMsg }] });
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          language,
+          messages: nextMessages,
+        }),
+        signal: controller.signal,
+      });
 
-      const data = await fetchWithRetry(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
+      const data = await response.json();
+      setMessages((prev) => [
+        ...prev,
         {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: history,
-            systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] }
-          })
-        }
-      );
-
-      const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "I am so sorry but can you clarify your inquiry?";
-      setMessages((prev) => [...prev, { role: 'model', text: aiResponse }]);
+          role: 'assistant',
+          text: data?.reply || 'Sorry, I can only assist with motor shop concerns.',
+        },
+      ]);
     } catch (err) {
-      setMessages((prev) => [...prev, { role: 'model', text: "I can't connect to the server right now please try again later Thank you." }]);
+      const fallbackReply = err.name === 'AbortError'
+        ? 'The assistant took too long to reply. Please try again.'
+        : 'The assistant is unavailable right now. Please try again later.';
+
+      setMessages((prev) => [...prev, { role: 'assistant', text: fallbackReply }]);
     } finally {
+      window.clearTimeout(timeoutId);
       setIsLoading(false);
     }
   };
@@ -852,20 +837,47 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
       )}
 
       {isChatOpen && (
-        <div className="chat-slide-up flex h-[520px] max-h-[80vh] w-[336px] max-w-[88vw] flex-col overflow-hidden rounded-[32px] border-2 border-white/10 bg-[#111111] shadow-[0_30px_100px_rgba(0,0,0,0.8)]">
-          <div className="flex items-center justify-between bg-[#ff3b3b] p-5 shadow-2xl">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-white/20 p-2 backdrop-blur-md ring-1 ring-white/30">
-                <Wrench size={20} className="text-white" />
-              </div>
-              <div>
-                <h3 className="text-lg font-black uppercase leading-none tracking-tighter text-white italic">AI Mechanic</h3>
+        <div className="chat-slide-up flex h-[540px] max-h-[82vh] w-[360px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-[32px] border-2 border-white/10 bg-[#111111] shadow-[0_30px_100px_rgba(0,0,0,0.8)] sm:w-[380px]">
+          <div className="border-b border-white/10 bg-[#ff3b3b] p-5 shadow-2xl">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="rounded-2xl bg-white/20 p-2 backdrop-blur-md ring-1 ring-white/30">
+                  <Wrench size={20} className="text-white" />
+                </div>
+                <div>
+                <h3 className="text-lg font-black uppercase leading-none tracking-tighter text-white italic">JBMS Chatbot</h3>
                 <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-red-100 opacity-80">Online • MOTOSHOP PH</p>
+                </div>
+              </div>
+              <button onClick={() => setIsChatOpen(false)} className="rounded-full bg-black/20 p-2 text-white shadow-lg transition-transform hover:rotate-90">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="mt-4 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-red-100/80">Language</p>
+                <p className="mt-1 text-xs font-bold text-white/90">{language === 'taglish' ? 'Taglish' : 'English'}</p>
+              </div>
+              <div className="flex rounded-full bg-black/20 p-1 ring-1 ring-white/15">
+                {['english', 'taglish'].map((option) => {
+                  const isSelected = language === option;
+
+                  return (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setLanguage(option)}
+                      className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] transition-all ${
+                        isSelected ? 'bg-white text-[#111111]' : 'text-white/80'
+                      }`}
+                    >
+                      {option === 'english' ? 'English' : 'Taglish'}
+                    </button>
+                  );
+                })}
               </div>
             </div>
-            <button onClick={() => setIsChatOpen(false)} className="rounded-full bg-black/20 p-2 text-white shadow-lg transition-transform hover:rotate-90">
-              <X size={20} />
-            </button>
           </div>
 
           <div ref={scrollRef} className="custom-scrollbar flex-1 space-y-5 overflow-y-auto bg-black p-5">
@@ -897,17 +909,21 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
           </div>
 
           <form onSubmit={handleSend} className="border-t border-white/5 bg-[#111111] p-5">
+            <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-gray-500">
+              Ask about motor services, booking, or inventory only.
+            </p>
             <div className="group relative">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="What's your question?"
+                placeholder={language === 'taglish' ? 'Ano ang concern mo sa motor shop?' : 'Ask about services, booking, or inventory'}
                 className="w-full rounded-full border-2 border-white/5 bg-[#202020] py-4 pl-6 pr-14 text-sm font-bold text-white transition-all placeholder:text-gray-600 focus:border-red-500 focus:outline-none"
               />
               <button
                 type="submit"
-                className={`${gradientSurfaceClass} absolute right-2 top-2 rounded-full p-3 text-white shadow-xl transition-all hover:scale-105 hover:shadow-[0_16px_28px_rgba(255,59,59,0.28)] active:scale-95`}
+                disabled={isLoading}
+                className={`${gradientSurfaceClass} absolute right-2 top-2 rounded-full p-3 text-white shadow-xl transition-all hover:scale-105 hover:shadow-[0_16px_28px_rgba(255,59,59,0.28)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-60`}
               >
                 <Send size={18} />
               </button>
