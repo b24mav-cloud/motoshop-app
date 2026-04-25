@@ -15,6 +15,9 @@ import motTwoGif from './mot2.gif';
 
 const gradientSurfaceClass = "overflow-hidden border border-[#ff5c5c] bg-[#ff3b3b] bg-clip-padding";
 const gradientTextClass = "text-[#ff4d4d]";
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+const chatApiUrl = `${apiBaseUrl}/api/chat`;
+const healthApiUrl = `${apiBaseUrl}/api/health`;
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('landing');
@@ -710,7 +713,7 @@ function GalleryView() {
             </div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between gap-4 p-6 sm:p-8">
-                <div>
+                <div className="min-w-0">
                 <p className={`${gradientTextClass} text-xs font-black uppercase tracking-[0.4em]`}>On Display</p>
                 <h3 className="mt-3 text-3xl font-black italic text-white sm:text-4xl">Featured gallery shot.</h3>
               </div>
@@ -773,11 +776,48 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
   const [input, setInput] = useState('');
   const [language, setLanguage] = useState('english');
   const [isLoading, setIsLoading] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState('checking');
   const scrollRef = useRef(null);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, isChatOpen]);
+
+  useEffect(() => {
+    if (!isChatOpen) return;
+
+    let isMounted = true;
+    const controller = new AbortController();
+
+    const checkConnection = async () => {
+      setConnectionStatus('checking');
+
+      try {
+        const response = await fetch(healthApiUrl, { signal: controller.signal });
+
+        if (!response.ok) {
+          throw new Error('Health check failed');
+        }
+
+        const data = await response.json();
+
+        if (isMounted) {
+          setConnectionStatus(data?.ok ? 'online' : 'offline');
+        }
+      } catch {
+        if (isMounted) {
+          setConnectionStatus('offline');
+        }
+      }
+    };
+
+    checkConnection();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, [isChatOpen]);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -793,7 +833,7 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch(chatApiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -803,11 +843,19 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
         signal: controller.signal,
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get('content-type') || '';
+      const isJson = contentType.includes('application/json');
+      const data = isJson ? await response.json() : null;
+
+      if (!isJson) {
+        throw new Error('Chat API returned HTML instead of JSON. Set VITE_API_BASE_URL to your backend server.');
+      }
 
       if (!response.ok) {
         throw new Error(data?.reply || 'Chat request failed.');
       }
+
+      setConnectionStatus('online');
 
       setMessages((prev) => [
         ...prev,
@@ -817,10 +865,12 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
         },
       ]);
     } catch (err) {
+      setConnectionStatus('offline');
+
       const fallbackReply = err.name === 'AbortError'
         ? 'The assistant took too long to reply. Please try again.'
         : err.message === 'Failed to fetch'
-          ? 'Chat server is offline. Start it with npm run dev or npm run server.'
+          ? 'Chat server is offline or blocked. Start the backend and check VITE_API_BASE_URL.'
           : err.message || 'The assistant is unavailable right now. Please try again later.';
 
       setMessages((prev) => [...prev, { role: 'assistant', text: fallbackReply }]);
@@ -844,15 +894,15 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
       )}
 
       {isChatOpen && (
-        <div className="chat-slide-up flex h-[540px] max-h-[82vh] w-[360px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-[32px] border-2 border-white/10 bg-[#111111] shadow-[0_30px_100px_rgba(0,0,0,0.8)] sm:w-[380px]">
-          <div className="border-b border-white/10 bg-[#ff3b3b] p-5 shadow-2xl">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="rounded-2xl bg-white/20 p-2 backdrop-blur-md ring-1 ring-white/30">
-                  <Wrench size={20} className="text-white" />
+        <div className="chat-slide-up flex h-[560px] max-h-[84vh] w-[360px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-[32px] border-2 border-white/10 bg-[#111111] shadow-[0_30px_100px_rgba(0,0,0,0.8)] sm:w-[380px]">
+          <div className="border-b border-white/10 bg-[#ff3b3b] px-4 py-3 shadow-2xl">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-2.5">
+                <div className="rounded-xl bg-white/20 p-2 backdrop-blur-md ring-1 ring-white/30">
+                  <Wrench size={18} className="text-white" />
                 </div>
                 <div>
-                <h3 className="text-lg font-black uppercase leading-none tracking-tighter text-white italic">JBMS Chatbot</h3>
+                <h3 className="truncate text-base font-black uppercase leading-none tracking-tight text-white italic">JBMS Chatbot</h3>
                 <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-red-100 opacity-80">Online • MOTOSHOP PH</p>
                 </div>
               </div>
@@ -861,10 +911,27 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
               </button>
             </div>
 
-            <div className="mt-4 flex items-center justify-between gap-3">
+            <div className="mt-2 flex items-center justify-between gap-3">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-red-100/80">Language</p>
-                <p className="mt-1 text-xs font-bold text-white/90">{language === 'taglish' ? 'Taglish' : 'English'}</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.22em] text-red-100/80">Language</p>
+                <div className="mt-1 flex items-center gap-2">
+                  <span className={`h-2 w-2 rounded-full ${
+                    connectionStatus === 'online'
+                      ? 'bg-emerald-300'
+                      : connectionStatus === 'checking'
+                        ? 'bg-amber-200'
+                        : 'bg-red-200'
+                  }`} />
+                  <p className="text-[11px] font-bold text-white/90">
+                    {language === 'taglish' ? 'Taglish' : 'English'} • {
+                      connectionStatus === 'online'
+                        ? 'Connected'
+                        : connectionStatus === 'checking'
+                          ? 'Checking'
+                          : 'Offline'
+                    }
+                  </p>
+                </div>
               </div>
               <div className="flex rounded-full bg-black/20 p-1 ring-1 ring-white/15">
                 {['english', 'taglish'].map((option) => {
@@ -875,7 +942,7 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
                       key={option}
                       type="button"
                       onClick={() => setLanguage(option)}
-                      className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] transition-all ${
+                      className={`rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] transition-all ${
                         isSelected ? 'bg-white text-[#111111]' : 'text-white/80'
                       }`}
                     >
@@ -887,13 +954,13 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
             </div>
           </div>
 
-          <div ref={scrollRef} className="custom-scrollbar flex-1 space-y-5 overflow-y-auto bg-black p-5">
+          <div ref={scrollRef} className="custom-scrollbar flex-1 space-y-4 overflow-y-auto bg-black px-4 py-4">
             {messages.map((msg, i) => (
-              <div key={i} className={`flex items-start gap-2.5 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                <div className={`rounded-2xl p-2 ${msg.role === 'user' ? 'bg-red-500/20' : 'bg-white/5'}`}>
+              <div key={i} className={`flex items-start gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                <div className={`rounded-2xl p-1.5 ${msg.role === 'user' ? 'bg-red-500/20' : 'bg-white/5'}`}>
                   {msg.role === 'user' ? <User size={16} className="text-[#ff4d4d]" /> : <Wrench size={16} className="text-gray-400" />}
                 </div>
-                <div className={`max-w-[78%] rounded-[24px] px-5 py-3.5 text-sm font-bold leading-relaxed shadow-xl ${
+                <div className={`max-w-[80%] rounded-[22px] px-4 py-3 text-sm font-bold leading-relaxed shadow-xl ${
                   msg.role === 'user'
                     ? 'rounded-tr-none bg-[#ff3b3b] text-white'
                     : 'rounded-tl-none border border-white/5 bg-[#202020] text-gray-100'
@@ -904,9 +971,9 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
             ))}
 
             {isLoading && (
-              <div className="flex items-center justify-start gap-2.5">
-                <div className="rounded-2xl bg-white/5 p-2"><Wrench size={16} className="animate-spin text-gray-600" /></div>
-                <div className="flex gap-1.5 rounded-[24px] rounded-tl-none bg-[#202020] px-5 py-3.5">
+              <div className="flex items-center justify-start gap-2">
+                <div className="rounded-2xl bg-white/5 p-1.5"><Wrench size={16} className="animate-spin text-gray-600" /></div>
+                <div className="flex gap-1.5 rounded-[22px] rounded-tl-none bg-[#202020] px-4 py-3">
                   <div className="h-2 w-2 animate-bounce rounded-full bg-[#ff3b3b]"></div>
                   <div className="h-2 w-2 animate-bounce rounded-full bg-[#ff3b3b] [animation-delay:0.2s]"></div>
                   <div className="h-2 w-2 animate-bounce rounded-full bg-[#ff3b3b] [animation-delay:0.4s]"></div>
@@ -915,8 +982,8 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
             )}
           </div>
 
-          <form onSubmit={handleSend} className="border-t border-white/5 bg-[#111111] p-5">
-            <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-gray-500">
+          <form onSubmit={handleSend} className="border-t border-white/5 bg-[#111111] px-4 py-3">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-gray-500">
               Ask about motor services, booking, or inventory only.
             </p>
             <div className="group relative">
@@ -925,7 +992,7 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={language === 'taglish' ? 'Ano ang concern mo sa motor shop?' : 'Ask about services, booking, or inventory'}
-                className="w-full rounded-full border-2 border-white/5 bg-[#202020] py-4 pl-6 pr-14 text-sm font-bold text-white transition-all placeholder:text-gray-600 focus:border-red-500 focus:outline-none"
+                className="w-full rounded-full border-2 border-white/5 bg-[#202020] py-3.5 pl-5 pr-14 text-sm font-bold text-white transition-all placeholder:text-gray-600 focus:border-red-500 focus:outline-none"
               />
               <button
                 type="submit"

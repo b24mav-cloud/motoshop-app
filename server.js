@@ -38,6 +38,10 @@ Behavior:
 app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 
+app.get('/api/health', (_req, res) => {
+  res.json({ ok: true });
+});
+
 function normalizeMessages(messages = []) {
   return messages
     .filter((message) => typeof message?.text === 'string' && message.text.trim())
