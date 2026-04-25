@@ -804,6 +804,11 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
       });
 
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data?.reply || 'Chat request failed.');
+      }
+
       setMessages((prev) => [
         ...prev,
         {
@@ -814,7 +819,9 @@ function Chatbot({ isChatOpen, setIsChatOpen }) {
     } catch (err) {
       const fallbackReply = err.name === 'AbortError'
         ? 'The assistant took too long to reply. Please try again.'
-        : 'The assistant is unavailable right now. Please try again later.';
+        : err.message === 'Failed to fetch'
+          ? 'Chat server is offline. Start it with npm run dev or npm run server.'
+          : err.message || 'The assistant is unavailable right now. Please try again later.';
 
       setMessages((prev) => [...prev, { role: 'assistant', text: fallbackReply }]);
     } finally {
