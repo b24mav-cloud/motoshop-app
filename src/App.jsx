@@ -69,7 +69,7 @@ export default function App() {
         {activeTab === 'landing' && <HomeView setActiveTab={setActiveTab} />}
         {activeTab === 'products' && <ProductsView />}
         {activeTab === 'services' && <ServicesView />}
-        {activeTab === 'about' && <PlaceholderView title="About" icon={<BookOpen size={48} className={`${gradientTextClass} mb-4`} />} />}
+        {activeTab === 'about' && <AboutView />}
         {activeTab === 'help' && <GalleryView />}
         {activeTab === 'join' && <JoinView />}
       </main>
@@ -635,6 +635,114 @@ function ServicesView() {
             </button>
           );
         })}
+      </div>
+    </section>
+  );
+}
+
+function AboutView() {
+  return (
+    <section className="mt-10 mb-24 animate-in fade-in duration-700">
+      <div className="relative overflow-hidden border border-white/10 bg-[#080808] shadow-[0_30px_90px_rgba(0,0,0,0.5)]">
+        <div className="pointer-events-none absolute -left-32 top-0 h-[420px] w-[420px] rounded-full border border-white/[0.05]" />
+        <div className="pointer-events-none absolute right-[-80px] top-[180px] h-[260px] w-[260px] rounded-full border border-white/[0.04]" />
+
+        <div className="grid gap-12 px-5 py-8 sm:px-8 lg:px-10 xl:grid-cols-[1.05fr_0.95fr] xl:items-start xl:px-12">
+          <div>
+            <p className="text-6xl font-black uppercase leading-[0.9] text-white sm:text-7xl lg:text-8xl">WHO</p>
+            <p className="text-6xl font-black uppercase leading-[0.9] text-[#e63b33] sm:text-7xl lg:text-8xl">WE ARE</p>
+            <p className="mt-8 max-w-2xl text-lg leading-8 text-gray-300 sm:text-xl">
+              Your trusted motorcycle repair and parts partner in East Bank Cainta Rizal.
+            </p>
+            <p className="mt-4 text-base italic text-gray-500 sm:text-lg">
+              &quot;Ang partner mo sa daan - mula pagkumpuni hanggang paglalakbay.&quot;
+            </p>
+          </div>
+
+          <div className="overflow-hidden border border-white/10 bg-[#111111] p-3 shadow-[0_20px_60px_rgba(0,0,0,0.4)]">
+            <img
+              src={gal1}
+              alt="JBMS MOTOSHOP storefront in East Bank Cainta Rizal"
+              className="h-[300px] w-full object-cover sm:h-[380px] lg:h-[440px]"
+            />
+          </div>
+        </div>
+
+        <div className="grid gap-10 px-5 pb-8 sm:px-8 lg:px-10 xl:grid-cols-[1fr_1.1fr] xl:px-12">
+          <div>
+            <h2 className="max-w-xl text-5xl font-black uppercase leading-[0.92] text-white sm:text-6xl">
+              BUILT BY <span className="text-[#e63b33]">RIDERS,</span>
+              <br />
+              FOR RIDERS
+            </h2>
+
+            <div className="mt-8 border-l-4 border-[#ff3b3b] bg-[#131313] px-5 py-5 shadow-[0_16px_40px_rgba(0,0,0,0.26)]">
+              <p className="text-xl font-black text-[#ff4d4d]">&rdquo;</p>
+              <p className="mt-2 text-lg italic leading-8 text-gray-300">
+                Hindi lang kami nagkukumpuni ng motorsiklo - nagtatayo kami ng tiwala, isang rider sa bawat pagkakataon.
+              </p>
+            </div>
+
+            <div className="mt-8 overflow-hidden border border-white/10 bg-[#111111]">
+              <img
+                src={gal3}
+                alt="JBMS MOTOSHOP corner view and surrounding East Bank Cainta Rizal area"
+                className="h-[220px] w-full object-cover sm:h-[260px]"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-6 text-lg leading-9 text-gray-300">
+            <p>
+              JBMS MotoShop was built from a simple idea: riders deserve a shop they can count on for honest service,
+              quality parts, and practical advice. From everyday maintenance to harder-to-find motorcycle needs, the
+              goal has always been to make every visit helpful, straightforward, and worth coming back for.
+            </p>
+            <p>
+              Located in <span className="font-bold text-white">East Bank Cainta Rizal</span>, JBMS continues to serve
+              the local riding community with the same hands-on care that shaped the shop from the start. Every repair,
+              replacement, and recommendation is guided by experience and real understanding of what riders need on the
+              road.
+            </p>
+            <p>
+              What keeps JBMS moving is a commitment to <span className="font-bold text-[#ff4d4d]">honesty</span>,{' '}
+              <span className="font-bold text-[#ff4d4d]">quality</span>, and <span className="font-bold text-[#ff4d4d]">speed</span>.
+              Whether someone comes in for a quick oil change or a deeper repair, the shop aims to treat every bike
+              with care and every customer like part of the community.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid gap-10 border-t border-white/10 px-5 py-8 sm:px-8 lg:px-10 xl:grid-cols-[0.92fr_1.08fr] xl:px-12">
+          <div className="flex min-h-[340px] items-center justify-center border border-dashed border-white/15 bg-[#111111] p-8 text-center">
+            <div>
+              <User size={38} className="mx-auto text-[#ff4d4d]" />
+              <p className="mt-5 text-xs font-black uppercase tracking-[0.4em] text-gray-500">Founder Photo Slot</p>
+              <p className="mt-3 max-w-sm text-base leading-7 text-gray-400">
+                The founder photo from your message isn&apos;t in the project files yet, so this section is ready for it
+                as soon as the image is added to `src/`.
+              </p>
+            </div>
+          </div>
+
+          <div className="border border-white/10 bg-[#111111] p-6 sm:p-8">
+            <p className={`${gradientTextClass} text-xs font-black uppercase tracking-[0.45em]`}>Founder & Owner</p>
+            <h3 className="mt-4 text-3xl font-black italic text-white sm:text-4xl">The heart behind JBMS MOTOSHOP.</h3>
+            <p className="mt-5 text-lg leading-8 text-gray-300">
+              The founder and owner of JBMS built the shop on hard work, hands-on motorcycle experience, and a real
+              connection to the riding community. His vision was to create a place where customers could trust both the
+              service and the advice they receive.
+            </p>
+            <p className="mt-5 text-lg leading-8 text-gray-300">
+              More than just running a business, he shaped JBMS into a dependable neighborhood moto shop where riders
+              can find support, reliable parts, and someone who understands the value of keeping every bike road-ready.
+            </p>
+            <p className="mt-5 text-lg leading-8 text-gray-300">
+              If you want, I can swap this placeholder with his actual photo and name next once you drop the image file
+              into the project.
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );
